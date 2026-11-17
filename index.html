@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>MC 赛博急救与空投系统 v1.0 Alpha</title>
+<title>MC 赛博急救与空投系统 v1.0</title>
 <style>
   /* ============================================================
-   *  通用变量（文件1 + 文件2 共用色板）
+   *  通用变量
    * ============================================================ */
   :root {
     --bg: #0b0d10; --panel: #111419; --border: #232a33;
@@ -28,7 +28,7 @@
   }
   .hidden { display: none !important; }
 
-  /* ================= 通用头部与底部（文件1） ================= */
+  /* ================= 通用头部与底部 ================= */
   header {
     flex: none; display: flex; align-items: center; justify-content: space-between;
     flex-wrap: wrap; gap: 8px;
@@ -64,7 +64,7 @@
   }
   @keyframes devilPulse { from { box-shadow: 0 0 4px rgba(255,77,94,.4); } to { box-shadow: 0 0 18px rgba(255,77,94,.9); } }
 
-  /* ================= 主界面布局（文件1） ================= */
+  /* ================= 主界面布局 ================= */
   main {
     flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
     padding: 12px; min-height: 0;
@@ -100,7 +100,7 @@
   .ok { color: var(--green); } .err { color: var(--red); } .warn { color: var(--yellow); }
   .dim { color: var(--dim); } .gold { color: var(--gold); text-shadow: 0 0 8px rgba(255,182,72,.5); }
 
-  /* ================= 成就殿堂界面（文件1） ================= */
+  /* ================= 成就殿堂界面 ================= */
   .ach-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; }
   .ach-category { color: var(--cyan); font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; }
   .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
@@ -113,19 +113,22 @@
   .ach-desc { color: var(--dim); font-size: 12px; margin-bottom: 10px; }
   .ach-text { color: var(--green); font-size: 13px; font-style: italic; line-height: 1.5; }
 
-  /* ================= 弹窗与提示（文件1） ================= */
+  /* ================= 弹窗与提示 ================= */
   .overlay {
     position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,.68);
     display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px);
-    animation: fadeIn .12s ease-out;
+    animation: fadeIn .12s ease-out; padding: 16px;
   }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal { width: min(430px, 90vw); background: #12161c; border: 1px solid #2c3642; border-radius: 6px; box-shadow: 0 16px 50px rgba(0,0,0,.8); }
-  .modal-title { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--cyan); font-size: 13px; letter-spacing: 1px; }
-  .modal-body { padding: 16px 14px; font-size: 13px; line-height: 1.75; }
+  .modal { width: min(520px, 92vw); max-height: 88vh; display: flex; flex-direction: column; background: #12161c; border: 1px solid #2c3642; border-radius: 6px; box-shadow: 0 16px 50px rgba(0,0,0,.8); }
+  .modal-title { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--cyan); font-size: 13px; letter-spacing: 1px; flex: none; }
+  .modal-body { padding: 16px 14px; font-size: 13px; line-height: 1.75; overflow-y: auto; }
   .modal-body p { margin: 0 0 8px; }
   .modal-body p:last-child { margin-bottom: 0; }
-  .modal-btns { padding: 10px 14px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--border); }
+  .modal-body ol, .modal-body ul { margin: 8px 0; padding-left: 22px; }
+  .modal-body li { margin-bottom: 4px; }
+  .modal-body code { background: #000; color: var(--gold); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+  .modal-btns { padding: 10px 14px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--border); flex: none; }
   .dlg-input { width: 100%; margin-top: 10px; padding: 8px 10px; background: #08090b; color: #c8d3df; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 13px; outline: none; }
   .dlg-input:focus { border-color: var(--cyan); }
 
@@ -136,13 +139,18 @@
   .room { text-align: center; } .door { font-size: 44px; margin: 6px 0 14px; }
   .note { margin-top: 10px; padding: 10px; border: 1px dashed #3a424e; border-radius: 4px; background: #0d1015; }
 
-  /* ================= 闪退界面（文件1） ================= */
+  .guide-box { background: rgba(70,211,255,.07); border: 1px solid rgba(70,211,255,.35); border-radius: 6px; padding: 12px; margin: 10px 0; }
+  .guide-box.gold { background: rgba(255,182,72,.07); border-color: rgba(255,182,72,.35); }
+  .guide-box h4 { margin: 0 0 8px; font-size: 13px; color: var(--cyan); }
+  .guide-box.gold h4 { color: var(--gold); }
+
+  /* ================= 闪退界面 ================= */
   .crash-screen { height: 100vh; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; background: #000; color: var(--red); padding: 24px; text-align: center; }
   .crash-screen pre { font-family: inherit; font-size: 12px; line-height: 1.7; color: #7a2530; text-align: left; white-space: pre-wrap; max-width: 90vw; }
   .crash-screen .tip { color: #4b5563; font-size: 13px; }
 
   /* ============================================================
-   *  下载助手视图（文件2，样式全部加 #viewDownloader 作用域）
+   *  下载助手视图（样式全部加 #viewDownloader 作用域）
    * ============================================================ */
   #viewDownloader {
     height: 100vh; height: 100dvh;
@@ -258,7 +266,7 @@
     margin-right: 5px; background: var(--green);
   }
 
-  /* ================= 教程弹窗（文件2） ================= */
+  /* ================= 教程弹窗 ================= */
   #viewDownloader .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000;
     display: flex; align-items: center; justify-content: center; padding: 20px;
@@ -357,16 +365,17 @@
   <header>
     <div class="title"><span class="dot">●</span>MC 赛博急救与空投系统</div>
     <div class="head-right">
+      <button id="btnGuide">❓ 使用指南</button>
       <button id="btnViewDl">📥 下载助手</button>
       <button id="btnViewAch">🏆 成就殿堂</button>
-      <div id="version" class="version">v1.0 Alpha</div>
+      <div id="version" class="version">v1.0</div>
     </div>
   </header>
 
   <main>
     <section class="panel">
       <div class="panel-title">// 日志输入 / LOG INPUT</div>
-      <textarea id="logInput" placeholder="把 crash-report / latest.log 的内容粘贴到这里……&#10;或者点击下面的按钮选择文件，也可以直接把文件拖进窗口。"></textarea>
+      <textarea id="logInput" placeholder="把 crash-report / latest.log 的内容粘贴到这里……&#10;支持 1.13+ 新版日志，也支持 1.7.10 ~ 1.12.2 的旧版日志。&#10;也可以点下面的「📁 读取文件」，或直接把文件拖进窗口。"></textarea>
       <div class="row">
         <button id="btnRead">📁 读取文件</button>
         <button id="btnScanMc">🔍 扫描MC目录</button>
@@ -391,13 +400,13 @@
 <!-- ================= 成就殿堂界面 ================= -->
 <div id="viewAch" class="hidden">
   <header>
-    <div class="title"><span class="dot">🏆</span>成就殿堂 (已解锁 <span id="achProgress">0/20</span>)</div>
+    <div class="title"><span class="dot">🏆</span>成就殿堂 (已解锁 <span id="achProgress">0/30</span>)</div>
     <button id="btnBackMain">⬅ 返回老中医</button>
   </header>
   <div class="ach-container" id="achList"></div>
 </div>
 
-<!-- ================= 下载助手界面（原文件2） ================= -->
+<!-- ================= 下载助手界面 ================= -->
 <div id="viewDownloader" class="hidden">
   <header>
     <div class="title"><span class="dot">●</span>MC 下载助手 · PCL2 补全辅助</div>
@@ -522,7 +531,7 @@
 "use strict";
 
 /* ============================================================
- *  1. 全局状态与数据保存（文件1）
+ *  1. 全局状态与数据保存
  * ============================================================ */
 const $ = id => document.getElementById(id);
 const logInput = $("logInput"), outputEl = $("output"), versionEl = $("version");
@@ -537,12 +546,18 @@ const DEFAULT_STATS = {
   unknownCount: 0,
   playTime: 0,
   vAngry: false,
-  // —— 下载助手新增字段 ——
+  // —— 下载助手字段 ——
   linkCopyCount: 0,
   guardBlockCount: 0,
-  mirrorUsed: []
+  mirrorUsed: [],
+  // —— v1.0 新增 ——
+  diagnoseCount: 0,     // 成功诊断次数（见多识广）
+  typedChars: 0,        // 键盘输入字符数（键盘粉碎者）
+  opCount: 0,           // 主界面按钮点击次数（终端指挥官）
+  onboarded: false      // 是否看过新手引导
 };
-let stats = Object.assign(DEFAULT_STATS, JSON.parse(localStorage.getItem('mcFixerStats')) || {});
+// 注意：必须新建对象，不能污染 DEFAULT_STATS 默认值
+let stats = Object.assign({}, DEFAULT_STATS, JSON.parse(localStorage.getItem('mcFixerStats')) || {});
 
 function saveStats() { localStorage.setItem('mcFixerStats', JSON.stringify(stats)); }
 function saveState() {
@@ -563,45 +578,155 @@ function showView(id) {
 }
 
 /* ============================================================
- *  3. 成就数据库配置（文件1，已扩充到 20 个）
+ *  3. 成就数据库配置（30 个）
  * ============================================================ */
 const ACH_DATA = {
   /* ---------- 核心诊断类 ---------- */
-  "初入江湖": { cat: "核心诊断类", desc: "第一次成功使用工具诊断日志。", text: "恭喜你，第一次成功诊断日志。原版报错从此不再是天书，老中医的招牌，今天算是挂上了。" },
-  "赛博华佗": { cat: "核心诊断类", desc: "累计成功诊断出 10 次内存溢出。", text: "你救活了 10 个被 4K 材质包折磨的电脑。少加点光影吧，真的。" },
-  "缝合怪大圆满": { cat: "核心诊断类", desc: "累计诊断出 10 次缺少前置。", text: "如果 MC 模组界有诺贝尔奖，你高低得拿个‘最佳物流统筹奖’。" },
-  "百毒不侵": { cat: "核心诊断类", desc: "连续 3 次解析出未知错误。", text: "你究竟是怎么在排除了主流漏洞之外还能发现这么多的？！深渊已经被你惊动了。" },
-  "大魔王的屈服": { cat: "核心诊断类", desc: "在版本号变成🐶后右键输入 GUN 解除封印。", text: "版本号大人终于安静了。你赢了，但别告诉别人它其实是个傲娇。" },
+  "初入江湖": {
+    cat: "核心诊断类", desc: "第一次成功使用工具诊断日志。",
+    text: "恭喜你第一次成功诊断日志。原版报错从此不再是天书，老中医的招牌算是挂上了。不过招牌能不能撑住，得看你接下来还会不会乱装模组。"
+  },
+  "赛博华佗": {
+    cat: "核心诊断类", desc: "累计成功诊断出 10 次内存溢出。",
+    text: "你救活了 10 个被 4K 材质包折磨的电脑。少加点光影吧，真的——你的内存条已经跪着求你了，它说它想退休。"
+  },
+  "缝合怪大圆满": {
+    cat: "核心诊断类", desc: "累计诊断出 10 次缺少前置。",
+    text: "如果 MC 模组界有诺贝尔奖，你高低得拿个‘最佳物流统筹奖’。前置之于整合包，就像螺丝之于宜家家具——少一颗，全散架。"
+  },
+  "百毒不侵": {
+    cat: "核心诊断类", desc: "连续 3 次解析出未知错误。",
+    text: "你究竟是怎么在排除了主流漏洞之外还能发现这么多的？！深渊已经被你惊动了，UP 主的头发也被你惊动没了。"
+  },
+  "大魔王的屈服": {
+    cat: "核心诊断类", desc: "在版本号变成🐶后右键输入 GUN 解除封印。",
+    text: "版本号大魔王终于安静了。你赢了，但别到处说——它其实是个傲娇，被 GUN 了还偷偷给你点了个赞。"
+  },
+  "时光机修理工": {
+    cat: "核心诊断类", desc: "成功诊断一份 1.13 之前的旧版日志。",
+    text: "你成功诊断了一份来自 1.13 之前的日志。那时候还没有 main 线程，没有 3D 皮肤，整合包里的模组也还很讲武德。欢迎回到过去，记得给老版本配 Java 8。"
+  },
+  "见多识广": {
+    cat: "核心诊断类", desc: "累计诊断日志 50 次。",
+    text: "五十次诊断，五十次崩溃，五十次‘这破游戏我不玩了’，然后第五十一次打开启动器。你不是在修游戏，你是在修行。"
+  },
 
   /* ---------- 整活与隐藏触发类 ---------- */
-  "赛博眼科专家": { cat: "整活与隐藏触发类", desc: "向工具内导入 .mp4 文件。", text: "我看不懂报错，但我看懂了你塞进来的视频。我是正经软件，不收涩图！" },
-  "头铁之王": { cat: "整活与隐藏触发类", desc: "在日志为空时疯狂点击诊断 20 次。", text: "断网重试二十次，你是指望网线自己反省一下吗？" },
-  "大力出奇迹": { cat: "整活与隐藏触发类", desc: "在 1 秒内疯狂点击界面按钮 30 次。", text: "你的鼠标还好吗？我感受到了你溢出的愤怒。" },
-  "电子闭门羹": { cat: "整活与隐藏触发类", desc: "被傲娇弹窗逼到闪退，并重新打开网页。", text: "开发者已拒绝与你交流，并把房门焊死。你失去了他，却永远得到了他的本地程序。" },
-  "赛博黑客": { cat: "整活与隐藏触发类", desc: "破解开发者的房间，点击 QWQ 解除锁死。", text: "你用最原始的交互，破解了赛博世界最高级的门禁。开发者向你扔了一个傲娇，并为你重新打开了房门。" },
+  "赛博眼科专家": {
+    cat: "整活与隐藏触发类", desc: "向工具内导入 .mp4 文件。",
+    text: "我看不懂报错，但我看懂了你塞进来的视频。我是正经软件，不收涩图！下不为例——或者，下次换个格式？"
+  },
+  "头铁之王": {
+    cat: "整活与隐藏触发类", desc: "在日志为空时疯狂点击诊断 20 次。",
+    text: "空日志点诊断二十次，你是指望输入框自己长出内容吗？还是网线会自己反省？它不会，它只会默默地断给你看。"
+  },
+  "大力出奇迹": {
+    cat: "整活与隐藏触发类", desc: "在 1 秒内疯狂点击界面按钮 30 次。",
+    text: "你的鼠标还好吗？我感受到了你溢出的愤怒。鼠标：我承受了这个价位不该承受的点击。"
+  },
+  "电子闭门羹": {
+    cat: "整活与隐藏触发类", desc: "被傲娇弹窗逼到闪退，并重新打开网页。",
+    text: "开发者已拒绝与你交流，并把房门焊死。你失去了他，却得到了他的本地程序——这笔买卖，不亏。"
+  },
+  "赛博黑客": {
+    cat: "整活与隐藏触发类", desc: "破解开发者的房间，点击 QWQ 解除锁死。",
+    text: "你用最原始的交互，破解了赛博世界最高级的门禁。开发者向你扔了一个傲娇，并为你重新打开了房门。建议下次直接敲门，别撬锁。"
+  },
+  "复制粘贴战神": {
+    cat: "整活与隐藏触发类", desc: "单次粘贴超过 5 万字符的日志。",
+    text: "你把一份比我代码还长的日志砸了进来。Ctrl+V 的那一刻，你的剪贴板发出了悲鸣。真正的勇士，敢于直面百万行的 crash-report。"
+  },
+  "键盘粉碎者": {
+    cat: "整活与隐藏触发类", desc: "累计在日志框输入超过 10 万字符。",
+    text: "累计十万字符，你的键盘已经申请工伤。它说它见过很多手，但没见过这么执着的。建议换个机械键盘，至少还能换轴。"
+  },
+  "夜猫子": {
+    cat: "整活与隐藏触发类", desc: "在凌晨 0:00 到 5:00 之间打开本工具。",
+    text: "凌晨零点到五点，正常人都在睡觉，你在修模组。别问为什么崩，问就是生物钟先崩的。"
+  },
+  "强迫症患者": {
+    cat: "整活与隐藏触发类", desc: "连续点击「清屏」5 次。",
+    text: "清屏五次。你是在清理终端，还是在清理人生？屏幕是空的，你的心也是空的，只有那个‘开始诊断’按钮还在等你。"
+  },
+  "终端指挥官": {
+    cat: "整活与隐藏触发类", desc: "在主界面累计点击按钮 100 次。",
+    text: "一百次操作，一百次希望。你的鼠标点击已经形成了肌肉记忆，你的手指比你的大脑更懂这个界面。指挥官，辛苦了。"
+  },
 
   /* ---------- 开发者专属与纪念类 ---------- */
-  "十年一梦": { cat: "开发者专属与纪念类", desc: "工具累计运行时间达到 10 小时。", text: "今年是你玩 MC 的第十年了。从网易到第三方，方块世界没变，只是我们长大了。" },
-  "赛博老兵的遗迹": { cat: "开发者专属与纪念类", desc: "检测到 .minecraft 目录且版本大于5个。", text: "一眼就看出你是身经百战的老兵。这些 versions 和 mods 文件夹，是你十年的青春勋章。" },
-  "白嫖的终点": { cat: "开发者专属与纪念类", desc: "在关于开发者界面停留超 1 分钟。", text: "从白嫖网易到转投第三方，现在你又用上了亲手写的工具。热爱，永远是最好的通行证。" },
-  "凌晨四点的洛杉矶": { cat: "开发者专属与纪念类", desc: "在凌晨 4:00 到 4:30 之间成功诊断。", text: "在代码的废墟上，总有人在深夜敲击键盘。致敬那些为了热爱而失眠的开发者。" },
+  "十年一梦": {
+    cat: "开发者专属与纪念类", desc: "工具累计运行时间达到 10 小时。",
+    text: "工具累计运行 10 小时了。从网易到第三方，从 1.7.10 到 1.21，方块世界没变，只是我们长大了。而你，还在这破电脑前修模组。"
+  },
+  "赛博老兵的遗迹": {
+    cat: "开发者专属与纪念类", desc: "检测到 .minecraft 目录且版本大于5个。",
+    text: "一眼就看出你是身经百战的老兵。这些 versions 文件夹，每一个都是一段青春；这些 mods 文件夹，每一个都是一次重装。"
+  },
+  "白嫖的终点": {
+    cat: "开发者专属与纪念类", desc: "在关于开发者界面停留超 1 分钟。",
+    text: "从白嫖网易到转投第三方，现在你又用上了工具。热爱永远是最好的通行证——也是唯一的通行证，毕竟这工具不收钱。"
+  },
+  "凌晨四点的洛杉矶": {
+    cat: "开发者专属与纪念类", desc: "在凌晨 4:00 到 4:30 之间成功诊断。",
+    text: "凌晨四点，科比在洛杉矶练球，你在电脑前修模组。虽然领域不同，但你们都有同一个梦想：别崩了，求你了。"
+  },
+  "OptiFine 受害者": {
+    cat: "开发者专属与纪念类", desc: "诊断出一次 OptiFine 相关错误。",
+    text: "OptiFine，一个让无数整合包作者又爱又恨的名字。你不是第一个受害者，也不会是最后一个。Iris + Sodium 了解一下？"
+  },
+  "全成就收集者": {
+    cat: "开发者专属与纪念类", desc: "解锁其余所有成就。",
+    text: "你集齐了所有成就。版本号大魔王向你低头，开发者的房门为你敞开，终端为你闪烁。这一刻，你就是 MC 赛博急救界的神。……然后你发现，还是修不好那个整合包。"
+  },
 
-  /* ---------- 下载助手类（新增 6 个） ---------- */
-  "伸手党の觉醒": { cat: "下载助手类", desc: "第一次成功导入版本清单 JSON。", text: "你终于肯自己找清单了。PCL2 下架下载功能那天，伸手党被迫学会了复制粘贴。" },
-  "链接搬运工": { cat: "下载助手类", desc: "在下载助手累计复制下载链接 20 次。", text: "你的剪贴板已经被 bmclapi 洗脑了。20 次复制，20 次对 PCL2 的无声控诉。" },
-  "防呆测试员": { cat: "下载助手类", desc: "在下载助手被防呆识别拦截 3 次（粘贴网址、格式错误等）。", text: "防呆系统都被你测出感情了。我再说最后一遍：粘网址不叫粘 JSON，粘网址不叫粘 JSON。" },
-  "镜像漂流者": { cat: "下载助手类", desc: "在下载助手把 5 个镜像源各切换至少一次。", text: "BMCLAPI、光速、EO、CERNET、交大——你像集邮一样集齐了所有镜像。网络再烂，也烂不过你这份执着。" },
-  "PCL2 传教士": { cat: "下载助手类", desc: "在下载助手打开导入教程并停留超过 30 秒。", text: "你终于明白补全才是正道了。放下手动放依赖库的执念，PCL2 会替你把活干完。阿门。" },
-  "远古召唤": { cat: "下载助手类", desc: "在下载助手的版本列表里选中一个 old_beta 或 old_alpha 版本。", text: "你选中了一个比我年龄还大的版本。考古学家，请接受我的敬意。别忘了给它配 Java 8。" }
+  /* ---------- 下载助手类 ---------- */
+  "伸手党の觉醒": {
+    cat: "下载助手类", desc: "第一次成功导入版本清单 JSON。",
+    text: "你终于肯自己找清单了。PCL2 下架下载功能那天，伸手党被迫进化成了复制粘贴党。达尔文看了都点头。"
+  },
+  "链接搬运工": {
+    cat: "下载助手类", desc: "在下载助手累计复制下载链接 20 次。",
+    text: "你的剪贴板已经被 bmclapi 腌入味了。20 次复制，20 次对 PCL2 的无声控诉，20 次‘为什么不能直接下载’的灵魂拷问。"
+  },
+  "防呆测试员": {
+    cat: "下载助手类", desc: "在下载助手被防呆识别拦截 3 次（粘贴网址、格式错误等）。",
+    text: "防呆系统都被你测出感情了。我再说最后一遍：粘网址不叫粘 JSON，粘网址不叫粘 JSON，粘网址不叫粘 JSON——重要的事情说三遍，你偏要试三遍。"
+  },
+  "镜像漂流者": {
+    cat: "下载助手类", desc: "在下载助手把 5 个镜像源各切换至少一次。",
+    text: "BMCLAPI、光速、EO、CERNET、交大——你像集邮一样集齐了所有镜像。网速再烂，也烂不过你这份执着；当然，也可能只是网速太烂，逼得你全都试了一遍。"
+  },
+  "PCL2 传教士": {
+    cat: "下载助手类", desc: "在下载助手打开导入教程并停留超过 30 秒。",
+    text: "你终于明白补全才是正道了。放下手动放依赖库的执念，PCL2 会替你把活干完。手动放依赖库的尽头，是重装。阿门。"
+  },
+  "远古召唤": {
+    cat: "下载助手类", desc: "在下载助手的版本列表里选中一个 old_beta 或 old_alpha 版本。",
+    text: "你选中了一个比我年龄还大的版本。考古学家，请接受我的敬意。别忘了给它配 Java 8，不然它会在你面前表演什么叫‘远古的愤怒’。"
+  },
+  "版本尝鲜者": {
+    cat: "下载助手类", desc: "在下载助手的版本列表里选中一个 snapshot 快照版本。",
+    text: "快照版本，一个让‘稳定’二字瑟瑟发抖的存在。你选择了最新的 bug，并为它准备了最新的崩溃报告。勇气可嘉。"
+  }
 };
 
 function unlock(name) {
-  if (!stats.achievements.includes(name)) {
-    stats.achievements.push(name);
-    saveStats();
-    out(`🏆 解锁隐藏成就【${name}】`, "gold");
-    if (!$("viewAch").classList.contains("hidden")) renderAchievements();
+  if (!name || stats.achievements.includes(name)) return;
+  stats.achievements.push(name);
+  saveStats();
+  out(`🏆 解锁隐藏成就【${name}】`, "gold");
+
+  // 全成就收集者：检查其余所有成就是否已解锁（排除自身，避免递归）
+  if (name !== "全成就收集者" && ACH_DATA["全成就收集者"]) {
+    const allNames = Object.keys(ACH_DATA);
+    const otherNames = allNames.filter(n => n !== "全成就收集者");
+    const unlockedOther = otherNames.filter(n => stats.achievements.includes(n));
+    if (unlockedOther.length === otherNames.length) {
+      unlock("全成就收集者");
+    }
   }
+
+  if (!$("viewAch").classList.contains("hidden")) renderAchievements();
 }
 
 function renderAchievements() {
@@ -639,7 +764,7 @@ function renderAchievements() {
 }
 
 /* ============================================================
- *  4. 基础 UI 工具（文件1）
+ *  4. 基础 UI 工具
  * ============================================================ */
 function esc(s) { return String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
 function out(text, cls) {
@@ -688,18 +813,90 @@ async function promptDialog(title, label) {
 }
 
 /* ============================================================
- *  5. 杂项成就监听（文件1）
+ *  5. 新手引导
+ * ============================================================ */
+function openGuide(isFirstTime) {
+  const html = `
+    <p>本工具是一个<strong>纯本地运行</strong>的 Minecraft 崩溃日志分析器 + 下载助手。不上传任何日志，不联网。</p>
+
+    <div class="guide-box">
+      <h4>🚑 三步急救</h4>
+      <ol>
+        <li>崩溃后，去 <code>.minecraft/crash-reports/</code> 找最新的 <code>.txt</code>；没有就去 <code>.minecraft/logs/latest.log</code></li>
+        <li>把内容粘贴到左侧输入框，或点「📁 读取文件」</li>
+        <li>点「⚡ 开始诊断」，右侧终端会给出<strong>锐评</strong>和<strong>处方</strong></li>
+      </ol>
+    </div>
+
+    <div class="guide-box gold">
+      <h4>🕰️ 旧版日志兼容</h4>
+      <p>自动识别 <strong>1.13 之前</strong>（1.7.10 / 1.12.2 等）的旧版日志格式，<code>[Client thread/INFO]</code>、<code>[FML]</code>、<code>Missing mods: [...]</code> 这些老古董也能看懂。</p>
+    </div>
+
+    <div class="guide-box">
+      <h4>✨ 还有什么</h4>
+      <ul>
+        <li>🏆 <strong>成就殿堂</strong>：30 个成就等你解锁，很多很搞，纯本地可完成</li>
+        <li>📥 <strong>下载助手</strong>：PCL2 下架下载功能后的补全辅助，离线解析</li>
+        <li>🐶 <strong>版本号</strong>：点它会……算了，你自己试</li>
+      </ul>
+    </div>
+
+    <p class="dim" style="font-size:12px; margin-top:10px;">${isFirstTime ? "本提示只出现一次，之后可在顶部「❓ 使用指南」重新查看。" : "看完就关吧，日志还等着你修呢。"}</p>
+  `;
+  modal({
+    title: "👋 使用指南 · MC 赛博急救与空投系统 v1.0",
+    html,
+    buttons: [{ text: isFirstTime ? "开始使用" : "关闭", value: true }]
+  }).then(() => {
+    if (isFirstTime) { stats.onboarded = true; saveStats(); }
+  });
+}
+
+$("btnGuide").addEventListener("click", () => openGuide(false));
+
+/* ============================================================
+ *  6. 杂项成就监听
  * ============================================================ */
 let globalClicks = [];
 document.addEventListener('click', e => {
-  if (e.target.tagName.toLowerCase() === 'button') {
-    const now = Date.now();
-    globalClicks = globalClicks.filter(t => now - t < 1000);
-    globalClicks.push(now);
-    if (globalClicks.length >= 30) { unlock("大力出奇迹"); globalClicks = []; }
+  const btn = e.target.closest ? e.target.closest('button') : null;
+  if (!btn) return;
+
+  // 大力出奇迹：1 秒内 30 次按钮点击
+  const now = Date.now();
+  globalClicks = globalClicks.filter(t => now - t < 1000);
+  globalClicks.push(now);
+  if (globalClicks.length >= 30) { unlock("大力出奇迹"); globalClicks = []; }
+
+  // 终端指挥官：主界面按钮累计点击 100 次
+  if (btn.closest('#viewMain')) {
+    stats.opCount = (stats.opCount || 0) + 1;
+    saveStats();
+    if (stats.opCount >= 100) unlock("终端指挥官");
   }
 });
 
+// 键盘粉碎者：统计非粘贴输入
+let lastLogLen = 0;
+logInput.addEventListener('input', (e) => {
+  const len = logInput.value.length;
+  const delta = len - lastLogLen;
+  lastLogLen = len;
+  if (e.inputType && e.inputType.indexOf('insertFrom') === 0) return; // 粘贴/拖拽不算
+  if (delta > 0) {
+    stats.typedChars = (stats.typedChars || 0) + delta;
+    if (stats.typedChars >= 100000) unlock("键盘粉碎者");
+  }
+});
+
+// 复制粘贴战神：单次粘贴超过 5 万字符
+logInput.addEventListener('paste', (e) => {
+  const pasted = (e.clipboardData && e.clipboardData.getData('text')) || '';
+  if (pasted.length >= 50000) unlock("复制粘贴战神");
+});
+
+// 运行时长统计
 setInterval(() => {
   stats.playTime += 1;
   if (stats.playTime >= 36000) unlock("十年一梦");
@@ -707,35 +904,133 @@ setInterval(() => {
 }, 1000);
 
 /* ============================================================
- *  6. 诊断规则表（核心增强）
+ *  7. 日志版本识别与旧版兼容
+ * ============================================================ */
+
+// 比较版本号：versionLessThan("1.7.10", "1.13") === true
+function versionLessThan(ver, target) {
+  const a = String(ver).split('.').map(n => parseInt(n, 10) || 0);
+  const b = String(target).split('.').map(n => parseInt(n, 10) || 0);
+  const len = Math.max(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    const x = a[i] || 0, y = b[i] || 0;
+    if (x !== y) return x < y;
+  }
+  return false;
+}
+
+function detectGameVersion(text) {
+  const pats = [
+    /Minecraft Version:\s*([\d][\w.-]*)/i,
+    /--fml\.mcVersion,?\s*([\d][\w.-]*)/i,
+    /--version,?\s*([\d][\w.-]*)/i,
+    /Loading Minecraft\s+([\d][\w.-]*)/i,
+    /for Minecraft\s+([\d][\w.-]*)/i,
+    /Minecraft\s+([\d][\w.-]*)\s+with/i
+  ];
+  for (const p of pats) {
+    const m = text.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function detectLogEra(text, version) {
+  // 有版本号优先用版本号判断，最可靠
+  if (version) {
+    const clean = String(version).replace(/[^\d.].*$/, '');
+    if (/^\d/.test(clean)) {
+      return versionLessThan(clean, "1.13") ? "legacy" : "modern";
+    }
+  }
+  // 没有版本号就用格式特征
+  const legacyRe = /\[Client thread\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|\[Server thread\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|\[Forge Mod Loader version|cpw\.mods\.fml|\[FML\]:\s/;
+  const modernRe = /\[(?:main|Render thread|Worker[^\]]*)\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|--fml\.mcVersion/;
+  const legacy = legacyRe.test(text);
+  const modern = modernRe.test(text);
+  if (legacy && !modern) return "legacy";
+  if (modern && !legacy) return "modern";
+  return "unknown";
+}
+
+/* ============================================================
+ *  8. 缺失前置提取（兼容 1.7.10 ~ 1.21）
  * ============================================================ */
 function extractMissingDeps(text) {
   const deps = new Set();
+  const push = s => {
+    if (!s) return;
+    const v = String(s).replace(/^['"`]+|['"`]+$/g, "").trim();
+    if (v) deps.add(v);
+  };
   let m;
 
-  const r1 = /Mod ID[:\s]+'([\w.-]+)'/gi;
-  while ((m = r1.exec(text))) deps.add(m[1]);
+  // —— 通用：Mod ID: 'xxx'（1.12.2+ 与 1.13+ 通用）
+  let r = /Mod ID[:\s]+'([\w.-]+)'/gi;
+  while ((m = r.exec(text))) push(m[1]);
 
-  const r2 = /requires\s+'([\w.-]+)'/gi;
-  while ((m = r2.exec(text))) deps.add(m[1]);
+  // —— 通用：requires 'xxx'
+  r = /requires\s+'([\w.-]+)'/gi;
+  while ((m = r.exec(text))) push(m[1]);
 
-  const r3 = /requires\s+([\w.-]+)\s+(?:any\s+version|version\s+[\d.]+|[\d.]+)/gi;
-  while ((m = r3.exec(text))) deps.add(m[1]);
+  // —— 通用：requires xxx any version / requires xxx 1.0
+  r = /requires\s+([\w.-]+)\s+(?:any\s+version|version\s+[\d.]+|[\d.]+)/gi;
+  while ((m = r.exec(text))) push(m[1]);
 
-  const r4 = /Missing mod[:\s]+'?([\w.-]+)'?/gi;
-  while ((m = r4.exec(text))) deps.add(m[1]);
+  // —— 通用：Missing mod: 'xxx'
+  r = /Missing mods?[:\s]+'?([\w.-]+)'?/gi;
+  while ((m = r.exec(text))) push(m[1]);
+
+  // —— Fabric：requires ... of mod 'xxx' which is missing
+  r = /requires[^\n]{0,80}?of\s+mod\s+'([\w.-]+)'\s+which is missing/gi;
+  while ((m = r.exec(text))) push(m[1]);
+
+  // —— 旧版 Forge：Missing mods: [xxx, yyy]
+  r = /Missing mods?:\s*\[([^\]]*)\]/gi;
+  while ((m = r.exec(text))) {
+    m[1].split(/[,\s]+/).forEach(x => push(x));
+  }
+
+  // —— 旧版 Forge：A dependency of 'xxx' is missing: \n  yyy
+  r = /dependency of\s+'?([\w.-]+)'?\s+is missing:?\s*\n([\s\S]{0,400}?)(?:\n\s*\n|\n\s*at\s|$)/gi;
+  while ((m = r.exec(text))) {
+    m[2].split(/[\s,]+/).forEach(x => push(x));
+  }
+
+  // —— 旧版 Forge：The mod xxx requires yyy which is missing
+  r = /requires\s+'?([\w.-]+)'?\s+which is missing/gi;
+  while ((m = r.exec(text))) push(m[1]);
+
+  // —— 旧版 Forge：java.lang.RuntimeException: Mod xxx requires yyy
+  r = /RuntimeException:\s*Mod\s+[\w.-]+\s+requires\s+([\w.-]+)/gi;
+  while ((m = r.exec(text))) push(m[1]);
 
   const exclude = new Set([
     "java", "minecraft", "forge", "fabric", "fabricloader", "neoforge", "quilt",
-    "a", "the", "or", "and", "version"
+    "a", "the", "or", "and", "version", "mod", "null", "true", "false"
   ]);
   return [...deps]
-    .map(d => d.trim())
-    .filter(d => d && !exclude.has(d.toLowerCase()))
+    .filter(d => d.length >= 2 && d.length <= 64)
+    .filter(d => !exclude.has(d.toLowerCase()))
+    .filter(d => !/^\d+$/.test(d))
     .slice(0, 10);
 }
 
+/* ============================================================
+ *  9. 诊断规则表（含旧版兼容增强）
+ * ============================================================ */
 const DIAGNOSIS_RULES = [
+  // ★ PermGen 必须在 OOM 之前：OutOfMemoryError: PermGen space 也匹配 OOM
+  {
+    id: "permgen",
+    test: t => /OutOfMemoryError:\s*PermGen space/i.test(t),
+    result: "永久代内存溢出（PermGen）",
+    comment: "Java 7 时代的 PermGen 空间被模组类塞满了，1.7.10 大型整合包常见。",
+    prescription: "升级到 Java 8（PermGen 已移除，改为 Metaspace）；临时方案是在启动参数加 -XX:MaxPermSize=256m。",
+    counter: "oomCount",
+    achievement: "赛博华佗",
+    achievementAt: 10
+  },
   {
     id: "oom",
     test: t => /OutOfMemoryError/.test(t),
@@ -764,7 +1059,7 @@ const DIAGNOSIS_RULES = [
   },
   {
     id: "missingDependency",
-    test: t => /Missing or unsupported mandatory dependencies|Missing dependency|Missing mods|Mod .* requires .* which is missing|requires .* but it is not installed|requires .* version .* or later/i.test(t),
+    test: t => /Missing or unsupported mandatory dependencies|Missing dependency|Missing mods|Missing mod|Mod .* requires .* which is missing|requires .* but it is not installed|requires .* version .* or later|A dependency of .* is missing|RuntimeException:\s*Mod .* requires/i.test(t),
     result: "缺少前置模组",
     comment: "有模组缺它要的前置，不装齐就没法加载。",
     prescription: "根据下面提到的模组名，去下载对应前置（很多前置都叫 XXX-API 或 XXX-Lib）。",
@@ -798,6 +1093,14 @@ const DIAGNOSIS_RULES = [
     comment: "把客户端专属模组装到了服务端，或者反过来。",
     prescription: "去 mods 文件夹删掉不兼容当前环境的模组（服务端删客户端模组，反之亦然）。"
   },
+  // ★ 游戏核心类缺失（必须在 modConflict 的宽泛 NoClassDefFoundError 之前）
+  {
+    id: "missingJar",
+    test: t => /(?:ClassNotFoundException|NoClassDefFoundError):\s*net[\/.]minecraft/i.test(t),
+    result: "游戏核心类缺失（jar 不完整）",
+    comment: "找不到 Minecraft 的核心类，通常是版本 jar 不完整或 libraries 缺失。1.7.10 / 1.12.2 老版本尤其常见。",
+    prescription: "用启动器重新下载 / 补全该版本；检查 versions/<版本>/<版本>.jar 是否存在且大小正常。"
+  },
   {
     id: "unsatisfiedLink",
     test: t => /UnsatisfiedLinkError|Failed to locate library|Failed to load a library: lwjgl/i.test(t),
@@ -818,6 +1121,19 @@ const DIAGNOSIS_RULES = [
     result: "Fabric 入口点失败",
     comment: "Fabric 模组初始化时抛出了异常。",
     prescription: "更新 Fabric API 和报错里提到的模组。"
+  },
+  // ★ 旧版 Forge / FML 加载异常
+  {
+    id: "fmlLoaderException",
+    test: t => /cpw\.mods\.fml\.common\.LoaderException|LoaderExceptionModCrash|fml\.common\.LoaderException/i.test(t),
+    result: "Forge / FML 加载异常（旧版）",
+    comment: "1.13 之前的 Forge 在加载模组时抛出了异常，通常是某个模组崩溃或前置缺失。",
+    prescription: "在日志里搜 'LoaderException' 前后几行，找到具体报错的模组名，删除或更新它。",
+    extra: t => {
+      const deps = extractMissingDeps(t);
+      if (deps.length) return ["📎 日志中疑似相关的模组：" + deps.map(d => `「${d}」`).join("、")];
+      return [];
+    }
   },
   {
     id: "forgeLoad",
@@ -861,6 +1177,18 @@ const DIAGNOSIS_RULES = [
     comment: "模组在处理数组时越过了边界，典型的模组 Bug。",
     prescription: "更新到最新版，或者删掉最近加的模组。"
   },
+  // ★ Ticking 类崩溃（新版/旧版 crash-report 通用描述）
+  {
+    id: "ticking",
+    test: t => /Description:\s*(Ticking entity|Ticking screen|Ticking block entity|Exception in server tick loop|Exception ticking world|Rendering screen|Rendering entity)/i.test(t) || /Exception ticking world|Exception in server tick loop/i.test(t),
+    result: "游戏刻崩溃（实体 / 方块 / 界面）",
+    comment: "游戏在更新某个实体、方块或界面时崩了，通常是某个模组处理不当。",
+    prescription: "看崩溃报告 'Description' 下面的实体/方块/模组信息，找到对应模组删掉或更新。也可以试试用 MCEdit / NBTExplorer 移走区块里的问题实体。",
+    extra: t => {
+      const m = t.match(/Description:\s*([^\n]+)/i);
+      return m ? [`📎 崩溃描述：${m[1].trim()}`] : [];
+    }
+  },
   {
     id: "npe",
     test: t => /java\.lang\.NullPointerException/i.test(t),
@@ -894,12 +1222,13 @@ const DIAGNOSIS_RULES = [
     test: t => /optifine/i.test(t),
     result: "OptiFine 相关",
     comment: "OptiFine 兼容性一直很差，很容易和其他模组打架。",
-    prescription: "试试 Iris + Sodium 替代 OptiFine，或换用其他 OptiFine 版本。"
+    prescription: "试试 Iris + Sodium 替代 OptiFine，或换用其他 OptiFine 版本。",
+    unlockOnHit: "OptiFine 受害者"
   }
 ];
 
 /* ============================================================
- *  7. 核心诊断逻辑
+ *  10. 核心诊断逻辑
  * ============================================================ */
 function runDiagnose() {
   const raw = logInput.value || "";
@@ -918,14 +1247,28 @@ function runDiagnose() {
   if (d.getHours() === 4 && d.getMinutes() < 30) unlock("凌晨四点的洛杉矶");
 
   const text = raw.slice(-MAX_LEN);
+  // 版本 / 年代检测：crash-report 与日志开头都可能带版本信息
+  const head = raw.slice(0, 8000);
+  const tail = raw.slice(-4000);
+  const combined = head + "\n" + tail;
+  const gameVer = detectGameVersion(combined);
+  const era = detectLogEra(combined, gameVer);
+
   out("──────── 开始诊断 ────────", "dim");
   out(`原文 ${raw.length} 字符，截取最后 ${text.length} 字符。`, "dim");
+  if (gameVer) out(`📎 识别到游戏版本：${gameVer}`, "dim");
+  if (era === "legacy") {
+    out("📎 检测到 1.13 之前的旧版日志格式（Client thread / FML），已启用兼容解析。", "dim");
+    unlock("时光机修理工");
+  } else if (era === "modern") {
+    out("📎 检测到 1.13+ 新版日志格式。", "dim");
+  }
 
   // 彩蛋：ProjectE 家族专属检测
   const lower = text.toLowerCase();
   const hasProjectEX = /\bprojectex\b/.test(lower);
   const hasProjectE  = /\bprojecte\b/.test(lower);
-  const looksLikeMissing = /Missing or unsupported mandatory dependencies|Missing dependency|Missing mods|Mod .* requires|requires .* but it is not installed/i.test(text);
+  const looksLikeMissing = /Missing or unsupported mandatory dependencies|Missing dependency|Missing mods|Missing mod|Mod .* requires|requires .* but it is not installed|A dependency of .* is missing/i.test(text);
 
   if (hasProjectEX && !hasProjectE && looksLikeMissing) {
     out("【诊断结果】缺胳膊少腿（ProjectE 家族）", "err");
@@ -933,10 +1276,11 @@ function runDiagnose() {
     out("【处方】赶紧去 CurseForge / MCBBS 下个 ProjectE，版本要和 ProjectEX 对得上。", "ok");
     stats.missingCount++; saveStats();
     if (stats.missingCount >= 10) unlock("缝合怪大圆满");
+    countDiagnose();
     return;
   }
 
-  // 通用规则匹配
+  // 通用规则匹配（命中一条即停，避免输出噪音）
   for (const rule of DIAGNOSIS_RULES) {
     if (!rule.test(text)) continue;
 
@@ -948,6 +1292,8 @@ function runDiagnose() {
       rule.extra(text).forEach(e => out(e, "dim"));
     }
 
+    if (rule.unlockOnHit) unlock(rule.unlockOnHit);
+
     if (rule.counter) {
       stats[rule.counter] = (stats[rule.counter] || 0) + 1;
       saveStats();
@@ -955,6 +1301,7 @@ function runDiagnose() {
         unlock(rule.achievement);
       }
     }
+    countDiagnose();
     return;
   }
 
@@ -969,10 +1316,23 @@ function runDiagnose() {
     out("触发隐藏成就【百毒不侵】！把日志发到评论区让UP主头秃！", "gold");
     unlock("百毒不侵");
   }
+  countDiagnose();
+}
+
+// 成功诊断计数（见多识广）
+function countDiagnose() {
+  stats.diagnoseCount = (stats.diagnoseCount || 0) + 1;
+  saveStats();
+  if (stats.diagnoseCount >= 50) unlock("见多识广");
+
+  // 新手引导：前几次诊断后给一条提示
+  if (stats.diagnoseCount === 1) {
+    out("💡 提示：诊断结果是基于日志关键字的启发式判断，不能保证 100% 准确。看不懂的话，点顶部「❓ 使用指南」。", "dim");
+  }
 }
 
 /* ============================================================
- *  8. 文件读取与扫描（文件1）
+ *  11. 文件读取与扫描
  * ============================================================ */
 function handleFile(file) {
   if (!file) return;
@@ -984,6 +1344,7 @@ function handleFile(file) {
   const reader = new FileReader();
   reader.onload = () => {
     logInput.value = String(reader.result || "");
+    lastLogLen = logInput.value.length;
     out(`已读取文件：${file.name}`, "dim");
     runDiagnose();
   };
@@ -993,9 +1354,26 @@ function handleFile(file) {
 $("btnRead").addEventListener("click", () => $("fileInput").click());
 $("fileInput").addEventListener("change", e => { handleFile(e.target.files[0]); e.target.value = ""; });
 document.addEventListener("dragover", e => e.preventDefault());
-document.addEventListener("drop", e => { e.preventDefault(); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+document.addEventListener("drop", e => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
 $("btnDiagnose").addEventListener("click", runDiagnose);
-$("btnClear").addEventListener("click", () => { outputEl.innerHTML = ""; logInput.value = ""; stats.emptyClickCount = 0; saveState(); });
+
+// 清屏 + 强迫症患者检测
+let clearTimes = [];
+$("btnClear").addEventListener("click", () => {
+  outputEl.innerHTML = "";
+  logInput.value = "";
+  lastLogLen = 0;
+  stats.emptyClickCount = 0;
+  saveState();
+
+  const now = Date.now();
+  clearTimes = clearTimes.filter(t => now - t < 15000);
+  clearTimes.push(now);
+  if (clearTimes.length >= 5) {
+    unlock("强迫症患者");
+    clearTimes = [];
+  }
+});
 
 $("btnScanMc").addEventListener("click", () => {
   const input = document.createElement("input");
@@ -1007,14 +1385,14 @@ $("btnScanMc").addEventListener("click", () => {
     if (vCount >= 5) {
       unlock("赛博老兵的遗迹");
     } else {
-      modal({ title: "检测结果", html: "<p>没有检测到丰富的版本目录，或许你是个萌新？</p>" });
+      modal({ title: "检测结果", html: "<p>没有检测到丰富的版本目录，或许你是个萌新？</p><p class='dim'>（扫描到 " + vCount + " 个 versions 文件）</p>" });
     }
   };
   input.click();
 });
 
 /* ============================================================
- *  9. 开发者傲娇主线（文件1）
+ *  12. 开发者傲娇主线
  * ============================================================ */
 const ANGRY_KEY = "mcFixer.isAngry";
 $("btnAbout").addEventListener("click", () => {
@@ -1028,7 +1406,7 @@ function aboutNormal() {
 
   modal({
     title: "关于开发者",
-    html: '<p>本软件由 <span class="dev-name" id="devName">@某位不愿透露姓名的UP主</span> 用爱发电开发。</p><p class="dim">v1.0 Alpha · 纯本地运行</p>',
+    html: '<p>本软件由 <span class="dev-name" id="devName">@某位不愿透露姓名的UP主</span> 用爱发电开发。</p><p class="dim">v1.0 · 纯本地运行</p>',
     buttons: [{ text: "关闭", value: false }],
     onMount(box, overlay) {
       timer = setTimeout(() => { if (!isInterrupted) unlock("白嫖的终点"); }, 60000);
@@ -1078,7 +1456,7 @@ function angryRoom() {
 }
 
 /* ============================================================
- *  10. 版本号大魔王（文件1）
+ *  13. 版本号大魔王
  * ============================================================ */
 let vClickTimes = [];
 function setVersion(html, cls) {
@@ -1095,8 +1473,8 @@ versionEl.addEventListener("click", () => {
   const n = vClickTimes.length;
 
   if (n === 1) out("喵？", "dim");
-  else if (n === 3) setVersion("v1.0 Alpha (你烦不烦啊？)");
-  else if (n === 10) setVersion("v1.0 Alpha (别点了！！)", "warn");
+  else if (n === 3) setVersion("v1.0 (你烦不烦啊？)");
+  else if (n === 10) setVersion("v1.0 (别点了！！)", "warn");
   else if (n >= 15) triggerDevil();
 });
 
@@ -1104,7 +1482,7 @@ function triggerDevil() {
   stats.vAngry = true;
   vClickTimes = [];
   window.open("https://b23.tv/wBpoyKl", "_blank");
-  setVersion('v1.0 Alpha 🐶', "devil");
+  setVersion('v1.0 🐶', "devil");
   out("版本号大人被你激怒了！！！", "err");
   out("（提示：也许该右键点一下那只狗头？）", "dim");
 }
@@ -1117,7 +1495,7 @@ versionEl.addEventListener("contextmenu", async e => {
 
   if (v.trim().toUpperCase() === "GUN") {
     stats.vAngry = false;
-    setVersion("v1.0 Alpha");
+    setVersion("v1.0");
     out("版本号大魔王骂骂咧咧地 GUN 了。", "gold");
     unlock("大魔王的屈服");
   } else {
@@ -1126,21 +1504,22 @@ versionEl.addEventListener("contextmenu", async e => {
 });
 
 /* ============================================================
- *  11. 视图切换按钮绑定（文件1）
+ *  14. 视图切换按钮绑定
  * ============================================================ */
 $("btnViewAch").addEventListener("click", () => { renderAchievements(); showView("viewAch"); });
 $("btnBackMain").addEventListener("click", () => showView("viewMain"));
 $("btnViewDl").addEventListener("click", () => showView("viewDownloader"));
 
 /* ============================================================
- *  12. 启动初始化（文件1）
+ *  15. 启动初始化
  * ============================================================ */
 (function init() {
   if (localStorage.getItem("mcFixer.log")) logInput.value = localStorage.getItem("mcFixer.log");
   if (localStorage.getItem("mcFixer.output")) outputEl.innerHTML = localStorage.getItem("mcFixer.output");
+  lastLogLen = logInput.value.length;
 
   if (stats.vAngry) {
-    versionEl.innerHTML = 'v1.0 Alpha 🐶';
+    versionEl.innerHTML = 'v1.0 🐶';
     versionEl.classList.add("devil");
   }
 
@@ -1149,16 +1528,28 @@ $("btnViewDl").addEventListener("click", () => showView("viewDownloader"));
     unlock("电子闭门羹");
   }
 
+  // 夜猫子：0:00 ~ 5:00 打开工具
+  const h = new Date().getHours();
+  if (h >= 0 && h < 5) unlock("夜猫子");
+
   if (!outputEl.innerHTML.trim()) {
-    out("MC 赛博急救与空投系统 v1.0 Alpha 已启动。", "ok");
-    out("请粘贴日志，或点击右上方“成就殿堂”查看收集进度。", "dim");
+    out("MC 赛博急救与空投系统 v1.0 已启动。", "ok");
+    out("💡 第一步：把 crash-report / latest.log 粘贴到左上输入框，或点「📁 读取文件」。", "dim");
+    out("💡 第二步：点「⚡ 开始诊断」，右侧会给出锐评和处方。", "dim");
+    out("💡 支持 1.7.10 ~ 1.21 各版本日志，新旧格式自动识别。", "dim");
+    out("💡 新手建议先点右上角「❓ 使用指南」。", "dim");
   } else {
     out("【系统】已恢复上次的工作进度。", "dim");
+  }
+
+  // 首次访问弹新手引导
+  if (!stats.onboarded) {
+    setTimeout(() => openGuide(true), 500);
   }
 })();
 
 /* ============================================================
- *  13. 下载助手（原文件2，独立 IIFE 作用域隔离）
+ *  16. 下载助手（独立 IIFE 作用域隔离）
  * ============================================================ */
 (function initDownloaderApp() {
   "use strict";
@@ -1335,7 +1726,7 @@ $("btnViewDl").addEventListener("click", () => showView("viewDownloader"));
     out("👉 请在左侧列表点击你要下载的版本。", "dim");
   }
 
-  /* ---------- 选择版本（含 远古召唤 判定） ---------- */
+  /* ---------- 选择版本（含彩蛋判定） ---------- */
   function selectVersion(v) {
     state.selectedVersion = v;
 
@@ -1346,6 +1737,10 @@ $("btnViewDl").addEventListener("click", () => showView("viewDownloader"));
     // 远古版本彩蛋：old_beta / old_alpha
     if (v.type === "old_beta" || v.type === "old_alpha") {
       unlockDl("远古召唤");
+    }
+    // 快照版本彩蛋
+    if (v.type === "snapshot") {
+      unlockDl("版本尝鲜者");
     }
 
     out(`──────── 已选择：${v.id} ────────`, "cyan");
