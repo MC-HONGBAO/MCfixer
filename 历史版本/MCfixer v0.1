@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MC 赛博急救与空投系统 v1.0 Alpha</title>
+<style>
+  :root {
+    --bg: #0b0d10; --panel: #111419; --border: #232a33;
+    --text: #b9c4d0; --dim: #4b5563;
+    --green: #35e07a; --cyan: #46d3ff; --yellow: #ffd23f;
+    --red: #ff4d5e; --gold: #ffb648;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: Consolas, "Courier New", monospace; font-size: 14px; overflow: hidden; }
+  
+  /* ================= 页面视图控制 ================= */
+  #viewMain, #viewAch { height: 100vh; display: flex; flex-direction: column; }
+  .hidden { display: none !important; }
+
+  /* ================= 通用头部与底部 ================= */
+  header {
+    flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #12161c 0%, #0b0d10 100%);
+  }
+  .title { color: #e6edf5; font-size: 15px; letter-spacing: 1px; }
+  .title .dot { color: var(--green); margin-right: 6px; }
+  .head-right { display: flex; align-items: center; gap: 14px; }
+  
+  footer {
+    flex: none; display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 8px 16px; border-top: 1px solid var(--border); background: #0e1116;
+  }
+  .hidden-hint { color: #2b3037; font-size: 12px; text-align: right; line-height: 1.4; }
+
+  /* ================= 版本号特效 ================= */
+  .version {
+    cursor: pointer; user-select: none; color: var(--cyan); font-size: 13px;
+    padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px;
+    background: #0e1116; transition: all .15s;
+  }
+  .version:hover { border-color: var(--cyan); }
+  .version.warn { color: var(--yellow); border-color: #5c4a12; }
+  .version.devil {
+    color: var(--red); border-color: var(--red);
+    text-shadow: 0 0 10px rgba(255,77,94,.7); animation: devilPulse 1s infinite alternate;
+  }
+  @keyframes devilPulse { from { box-shadow: 0 0 4px rgba(255,77,94,.4); } to { box-shadow: 0 0 18px rgba(255,77,94,.9); } }
+
+  /* ================= 主界面布局 ================= */
+  main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; min-height: 0; }
+  .panel {
+    display: flex; flex-direction: column; gap: 8px; min-height: 0;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px;
+  }
+  .panel-title { color: var(--dim); font-size: 12px; letter-spacing: 1px; flex: none; }
+  
+  textarea {
+    flex: 1; width: 100%; resize: none; min-height: 0; background: #08090b; color: #c8d3df;
+    border: 1px solid var(--border); border-radius: 4px; padding: 10px; font-family: inherit; outline: none; line-height: 1.55;
+  }
+  textarea:focus { border-color: #2f6f55; box-shadow: 0 0 0 2px rgba(53,224,122,.08); }
+  
+  .row { display: flex; gap: 8px; flex-wrap: wrap; flex: none; }
+  button {
+    font-family: inherit; font-size: 13px; cursor: pointer; background: #161b22; color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px; padding: 7px 14px; transition: all .12s;
+  }
+  button:hover { background: #1d2530; color: #fff; border-color: #3a4654; }
+  button:active { transform: translateY(1px); }
+  
+  .output {
+    flex: 1; overflow-y: auto; min-height: 0; background: #08090b; border: 1px solid var(--border);
+    border-radius: 4px; padding: 10px; font-size: 13px; line-height: 1.65;
+  }
+  .line { white-space: pre-wrap; word-break: break-all; }
+  .ts { color: #333b45; }
+  .ok { color: var(--green); } .err { color: var(--red); } .warn { color: var(--yellow); }
+  .dim { color: var(--dim); } .gold { color: var(--gold); text-shadow: 0 0 8px rgba(255,182,72,.5); }
+
+  /* ================= 成就殿堂界面 ================= */
+  .ach-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; }
+  .ach-category { color: var(--cyan); font-size: 16px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; }
+  .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .ach-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 14px;
+    opacity: 0.3; transition: all 0.3s; filter: grayscale(1);
+  }
+  .ach-card.unlocked { opacity: 1; border-color: var(--gold); box-shadow: 0 0 15px rgba(255,182,72,0.1); filter: grayscale(0); }
+  .ach-title { color: var(--gold); font-weight: bold; margin-bottom: 6px; font-size: 15px; display: flex; justify-content: space-between; }
+  .ach-desc { color: var(--dim); font-size: 12px; margin-bottom: 10px; }
+  .ach-text { color: var(--green); font-size: 13px; font-style: italic; line-height: 1.5; }
+
+  /* ================= 弹窗与提示 ================= */
+  .overlay {
+    position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,.68);
+    display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px);
+    animation: fadeIn .12s ease-out;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal { width: min(430px, 90vw); background: #12161c; border: 1px solid #2c3642; border-radius: 6px; box-shadow: 0 16px 50px rgba(0,0,0,.8); }
+  .modal-title { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--cyan); font-size: 13px; letter-spacing: 1px; }
+  .modal-body { padding: 16px 14px; font-size: 13px; line-height: 1.75; }
+  .modal-body p { margin: 0 0 8px; }
+  .modal-body p:last-child { margin-bottom: 0; }
+  .modal-btns { padding: 10px 14px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--border); }
+  .dlg-input { width: 100%; margin-top: 10px; padding: 8px 10px; background: #08090b; color: #c8d3df; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 13px; outline: none; }
+  .dlg-input:focus { border-color: var(--cyan); }
+  
+  .dev-name { color: var(--cyan); cursor: pointer; border-bottom: 1px dashed var(--cyan); padding-bottom: 1px; transition: all .15s; }
+  .dev-name:hover { color: #fff; text-shadow: 0 0 12px rgba(70,211,255,.9); }
+  .qwq { cursor: pointer; color: #8a94a2; border: 1px dashed #3a424e; border-radius: 4px; padding: 4px 12px; display: inline-block; transition: all .15s; letter-spacing: 2px; }
+  .qwq:hover { color: var(--green); border-color: var(--green); text-shadow: 0 0 12px rgba(53,224,122,.8); }
+  .room { text-align: center; } .door { font-size: 44px; margin: 6px 0 14px; }
+  .note { margin-top: 10px; padding: 10px; border: 1px dashed #3a424e; border-radius: 4px; background: #0d1015; }
+
+  /* ================= 闪退界面 ================= */
+  .crash-screen { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; background: #000; color: var(--red); padding: 24px; text-align: center; }
+  .crash-screen pre { font-family: inherit; font-size: 12px; line-height: 1.7; color: #7a2530; text-align: left; white-space: pre-wrap; max-width: 90vw; }
+  .crash-screen .tip { color: #4b5563; font-size: 13px; }
+
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } .hidden-hint { font-size: 11px; } }
+</style>
+</head>
+<body>
+
+<!-- ================= 主界面 ================= -->
+<div id="viewMain">
+  <header>
+    <div class="title"><span class="dot">●</span>MC 赛博急救与空投系统</div>
+    <div class="head-right">
+      <button id="btnViewAch">🏆 成就殿堂</button>
+      <div id="version" class="version">v1.0 Alpha</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="panel-title">// 日志输入 / LOG INPUT</div>
+      <textarea id="logInput" placeholder="把 crash-report / latest.log 的内容粘贴到这里……&#10;或者点击下面的按钮选择文件，也可以直接把文件拖进窗口。"></textarea>
+      <div class="row">
+        <button id="btnRead">📁 读取文件</button>
+        <button id="btnScanMc">🔍 扫描MC目录</button>
+        <button id="btnDiagnose">⚡ 开始诊断</button>
+        <button id="btnClear">🧹 清屏</button>
+      </div>
+      <input type="file" id="fileInput" hidden accept=".log,.txt,.mp4,.crash-report,.json,text/*" />
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">// 终端输出 / TERMINAL</div>
+      <div id="output" class="output"></div>
+    </section>
+  </main>
+
+  <footer>
+    <button id="btnAbout">关于开发者</button>
+    <div class="hidden-hint">不要调戏版本号大人，它是大魔王，如果你激怒了它，一定不要让它GUN。</div>
+  </footer>
+</div>
+
+<!-- ================= 成就殿堂界面 ================= -->
+<div id="viewAch" class="hidden">
+  <header>
+    <div class="title"><span class="dot">🏆</span>成就殿堂 (已解锁 <span id="achProgress">0/14</span>)</div>
+    <button id="btnBackMain">⬅ 返回老中医</button>
+  </header>
+  <div class="ach-container" id="achList"></div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+ *  1. 全局状态与数据保存
+ * ============================================================ */
+const $ = id => document.getElementById(id);
+const logInput = $("logInput"), outputEl = $("output"), versionEl = $("version");
+const MAX_LEN = 5000;
+
+// 初始化统计数据 (如果没有则新建)
+let stats = JSON.parse(localStorage.getItem('mcFixerStats')) || {
+  achievements: [],
+  oomCount: 0,
+  missingCount: 0,
+  emptyClickCount: 0,
+  unknownCount: 0,
+  playTime: 0,
+  vAngry: false
+};
+
+function saveStats() { localStorage.setItem('mcFixerStats', JSON.stringify(stats)); }
+function saveState() {
+  localStorage.setItem("mcFixer.log", logInput.value);
+  localStorage.setItem("mcFixer.output", outputEl.innerHTML);
+  saveStats();
+}
+window.addEventListener("beforeunload", saveState);
+
+/* ============================================================
+ *  2. 成就数据库配置
+ * ============================================================ */
+const ACH_DATA = {
+  "初入江湖": { cat: "核心诊断类", desc: "第一次成功使用工具诊断日志。", text: "恭喜你，迈出了摆脱‘纯净原版报错’的第一步。老中医的招牌，今天算是挂上了。" },
+  "赛博华佗": { cat: "核心诊断类", desc: "累计成功诊断出 10 次内存溢出。", text: "你救活了 10 个被 4K 材质包折磨的电脑。少加点光影吧，真的。" },
+  "缝合怪大圆满": { cat: "核心诊断类", desc: "累计诊断出 10 次缺少前置。", text: "如果 MC 模组界有诺贝尔奖，你高低得拿个‘最佳物流统筹奖’。" },
+  "百毒不侵": { cat: "核心诊断类", desc: "连续 3 次解析出未知错误。", text: "你究竟是怎么在排除了主流漏洞之外还能发现这么多的？！深渊已经被你惊动了。" },
+  "大魔王的屈服": { cat: "核心诊断类", desc: "在版本号变成🐶后右键输入 GUN 解除封印。", text: "版本号大人终于安静了。你赢了，但别告诉别人它其实是个傲娇。" },
+  
+  "赛博眼科专家": { cat: "整活与隐藏触发类", desc: "向工具内导入 .mp4 文件。", text: "我看不懂报错，但我看懂了你塞进来的视频。我是正经软件，不收涩图！" },
+  "头铁之王": { cat: "整活与隐藏触发类", desc: "在日志为空时疯狂点击诊断 20 次。", text: "断网重试二十次，你是指望网线自己反省一下吗？" },
+  "大力出奇迹": { cat: "整活与隐藏触发类", desc: "在 1 秒内疯狂点击界面按钮 30 次。", text: "你的鼠标还好吗？我感受到了你溢出的愤怒。" },
+  "电子闭门羹": { cat: "整活与隐藏触发类", desc: "被傲娇弹窗逼到闪退，并重新打开网页。", text: "开发者已拒绝与你交流，并把房门焊死。你失去了他，但也永远得到了他（的本地程序）。" },
+  "赛博黑客": { cat: "整活与隐藏触发类", desc: "破解开发者的房间，点击 QWQ 解除锁死。", text: "你用最原始的交互，破解了赛博世界最高级的门禁。开发者向你扔了一个傲娇，并为你重新打开了房门。" },
+  
+  "十年一梦": { cat: "开发者专属与纪念类", desc: "工具累计运行时间达到 10 小时。", text: "今年是你玩 MC 的第十年了。从网易到第三方，方块世界没变，只是我们长大了。" },
+  "赛博老兵的遗迹": { cat: "开发者专属与纪念类", desc: "检测到 .minecraft 目录且版本大于5个。", text: "一眼就看出你是身经百战的老兵。这些 versions 和 mods 文件夹，是你十年的青春勋章。" },
+  "白嫖的终点": { cat: "开发者专属与纪念类", desc: "在关于开发者界面停留超 1 分钟。", text: "从白嫖网易到转投第三方，现在你又用上了亲手写的工具。热爱，永远是最好的通行证。" },
+  "凌晨四点的洛杉矶": { cat: "开发者专属与纪念类", desc: "在凌晨 4:00 到 4:30 之间成功诊断。", text: "在代码的废墟上，总有人在深夜敲击键盘。致敬那些为了热爱而失眠的开发者。" }
+};
+
+function unlock(name) {
+  if (!stats.achievements.includes(name)) {
+    stats.achievements.push(name);
+    saveStats();
+    out(`🏆 解锁隐藏成就【${name}】`, "gold");
+    // 如果在成就界面，实时刷新
+    if (!$("viewAch").classList.contains("hidden")) renderAchievements();
+  }
+}
+
+function renderAchievements() {
+  const container = $("achList");
+  container.innerHTML = "";
+  $("achProgress").textContent = `${stats.achievements.length}/${Object.keys(ACH_DATA).length}`;
+  
+  const categories = [...new Set(Object.values(ACH_DATA).map(d => d.cat))];
+  
+  categories.forEach(cat => {
+    let catDiv = document.createElement("div");
+    catDiv.innerHTML = `<div class="ach-category">${cat}</div>`;
+    let grid = document.createElement("div");
+    grid.className = "ach-grid";
+    
+    for (let name in ACH_DATA) {
+      if (ACH_DATA[name].cat === cat) {
+        let isUnlock = stats.achievements.includes(name);
+        let card = document.createElement("div");
+        card.className = `ach-card ${isUnlock ? "unlocked" : ""}`;
+        card.innerHTML = `
+          <div class="ach-title">
+            <span>${isUnlock ? name : "??? (未解锁)"}</span>
+            <span>${isUnlock ? "🏆" : "🔒"}</span>
+          </div>
+          <div class="ach-desc">触发条件：${ACH_DATA[name].desc}</div>
+          <div class="ach-text">${isUnlock ? `“${ACH_DATA[name].text}”` : "“你还没有发现这个秘密……”"}</div>
+        `;
+        grid.appendChild(card);
+      }
+    }
+    catDiv.appendChild(grid);
+    container.appendChild(catDiv);
+  });
+}
+
+/* ============================================================
+ *  3. 基础 UI 工具
+ * ============================================================ */
+function esc(s) { return String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+function out(text, cls) {
+  const line = document.createElement("div");
+  line.className = "line " + (cls || "");
+  const t = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+  line.innerHTML = `<span class="ts">[${t}]</span> ${esc(text)}`;
+  outputEl.appendChild(line);
+  outputEl.scrollTop = outputEl.scrollHeight;
+}
+
+function modal({ title = "", html = "", buttons = [{ text: "确定", value: true }], onMount }) {
+  return new Promise(resolve => {
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    const box = document.createElement("div");
+    box.className = "modal";
+    box.innerHTML = `<div class="modal-title">${esc(title)}</div><div class="modal-body">${html}</div><div class="modal-btns"></div>`;
+    
+    const btnWrap = box.querySelector(".modal-btns");
+    buttons.forEach(b => {
+      const btn = document.createElement("button");
+      btn.textContent = b.text;
+      btn.addEventListener("click", () => { overlay.remove(); resolve(b.value); });
+      btnWrap.appendChild(btn);
+    });
+    overlay.appendChild(box);
+    $("modalRoot").appendChild(overlay);
+    if (onMount) onMount(box, overlay);
+  });
+}
+
+async function promptDialog(title, label) {
+  let inputEl = null;
+  const v = await modal({
+    title,
+    html: `<p>${esc(label)}</p><input class="dlg-input" type="text" />`,
+    buttons: [{ text: "取消", value: null }, { text: "确定", value: "__OK__" }],
+    onMount(box) {
+      inputEl = box.querySelector(".dlg-input");
+      inputEl.focus();
+      inputEl.addEventListener("keydown", e => { if (e.key === "Enter") box.querySelector(".modal-btns button:last-child").click(); });
+    }
+  });
+  return v === "__OK__" ? inputEl.value : null;
+}
+
+/* ============================================================
+ *  4. 杂项成就监听
+ * ============================================================ */
+// 大力出奇迹 (1秒30次)
+let globalClicks = [];
+document.addEventListener('click', e => {
+  if (e.target.tagName.toLowerCase() === 'button') {
+    const now = Date.now();
+    globalClicks = globalClicks.filter(t => now - t < 1000);
+    globalClicks.push(now);
+    if (globalClicks.length >= 30) { unlock("大力出奇迹"); globalClicks = []; }
+  }
+});
+
+// 十年一梦 (累计1小时=3600秒，为了方便测试可以改成 3600，这里按要求是10小时=36000)
+setInterval(() => { 
+  stats.playTime += 1; 
+  if (stats.playTime >= 36000) unlock("十年一梦"); 
+  if(stats.playTime % 10 === 0) saveStats(); // 每10秒存一次避免频繁读写
+}, 1000);
+
+/* ============================================================
+ *  5. 核心诊断逻辑
+ * ============================================================ */
+function runDiagnose() {
+  const raw = logInput.value || "";
+  if (!raw.trim()) {
+    out("日志是空的，老中医也没辙。", "warn");
+    stats.emptyClickCount++;
+    saveStats();
+    if (stats.emptyClickCount >= 20) unlock("头铁之王");
+    return;
+  }
+  
+  // 诊断成功，重置空点计数
+  stats.emptyClickCount = 0;
+  unlock("初入江湖");
+
+  // 时间成就
+  const d = new Date();
+  if (d.getHours() === 4 && d.getMinutes() < 30) unlock("凌晨四点的洛杉矶");
+
+  const text = raw.slice(-MAX_LEN);
+  out("──────── 开始诊断 ────────", "dim");
+  out(`原文 ${raw.length} 字符，截取最后 ${text.length} 字符。`, "dim");
+
+  if (text.includes("OutOfMemoryError") || text.includes("Java heap space")) {
+    out("【诊断结果】内存溢出", "err");
+    out("【锐评】放过你的电脑吧！", "warn");
+    out("【处方】调小内存，或者删掉4K材质包。", "ok");
+    stats.oomCount++; saveStats();
+    if (stats.oomCount >= 10) unlock("赛博华佗");
+    return;
+  }
+
+  if (text.includes("UnsupportedClassVersionError") || text.includes("class file version")) {
+    out("【诊断结果】Java版本不对", "err");
+    out("【锐评】拿前朝的剑斩本朝的官？", "warn");
+    out("【处方】去装个 Java 17！", "ok");
+    return;
+  }
+
+  const hasProjectEX = /ProjectEX/.test(text), hasProjectE = /ProjectE(?!X)/.test(text);
+  if ((hasProjectEX && (/Missing/i.test(text) || !hasProjectE)) || /Missing or unsupported mandatory dependencies/i.test(text)) {
+    out("【诊断结果】缺胳膊少腿", "err");
+    out("【锐评】装了 ProjectEX 居然不装祖宗 ProjectE？", "warn");
+    out("【处方】赶紧去下 ProjectE。", "ok");
+    stats.missingCount++; saveStats();
+    if (stats.missingCount >= 10) unlock("缝合怪大圆满");
+    return;
+  }
+
+  if (text.includes("NoSuchMethodError") || text.includes("NoClassDefFoundError")) {
+    out("【诊断结果】模组打架了", "err");
+    out("【锐评】API版本不对。", "warn");
+    out("【处方】删掉最近加的模组。", "ok");
+    return;
+  }
+
+  stats.unknownCount++;
+  saveStats();
+  if (stats.unknownCount < 3) {
+    out(`未知错误，是否装了外星人模组？(当前进度 ${stats.unknownCount}/3)`, "warn");
+  } else {
+    stats.unknownCount = 0; saveStats();
+    out("触发隐藏成就【百毒不侵】！把日志发到评论区让UP主头秃！", "gold");
+    unlock("百毒不侵");
+  }
+}
+
+/* ============================================================
+ *  6. 文件读取与扫描
+ * ============================================================ */
+function handleFile(file) {
+  if (!file) return;
+  if (/\.mp4$/i.test(file.name)) {
+    out("【赛博眼科专家】我看不懂报错，但我看懂了你塞进来的视频。我是正经软件，不收涩图！", "warn");
+    unlock("赛博眼科专家");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    logInput.value = String(reader.result || "");
+    out(`已读取文件：${file.name}`, "dim");
+    runDiagnose();
+  };
+  reader.readAsText(file);
+}
+
+$("btnRead").addEventListener("click", () => $("fileInput").click());
+$("fileInput").addEventListener("change", e => { handleFile(e.target.files[0]); e.target.value = ""; });
+document.addEventListener("dragover", e => e.preventDefault());
+document.addEventListener("drop", e => { e.preventDefault(); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+$("btnDiagnose").addEventListener("click", runDiagnose);
+$("btnClear").addEventListener("click", () => { outputEl.innerHTML = ""; logInput.value = ""; stats.emptyClickCount = 0; saveState(); });
+
+// 赛博老兵扫描
+$("btnScanMc").addEventListener("click", () => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.webkitdirectory = true; // 允许选择文件夹
+  input.onchange = (e) => {
+    const files = Array.from(e.target.files);
+    // 统计路径中出现 versions/ 并且是文件夹或者特定jar的
+    let vCount = files.filter(f => f.webkitRelativePath.includes('versions/')).length;
+    if (vCount >= 5) {
+      unlock("赛博老兵的遗迹");
+    } else {
+      modal({ title: "检测结果", html: "<p>没有检测到丰富的版本目录，或许你是个萌新？</p>" });
+    }
+  };
+  input.click();
+});
+
+/* ============================================================
+ *  7. 开发者傲娇主线
+ * ============================================================ */
+const ANGRY_KEY = "mcFixer.isAngry";
+$("btnAbout").addEventListener("click", () => {
+  if (localStorage.getItem(ANGRY_KEY) === "true") angryRoom();
+  else aboutNormal();
+});
+
+function aboutNormal() {
+  let isInterrupted = false;
+  let timer = null;
+  
+  modal({
+    title: "关于开发者",
+    html: '<p>本软件由 <span class="dev-name" id="devName">@某位不愿透露姓名的UP主</span> 用爱发电开发。</p><p class="dim">v1.0 Alpha · 纯本地运行</p>',
+    buttons: [{ text: "关闭", value: false }],
+    onMount(box, overlay) {
+      // 白嫖的终点判定
+      timer = setTimeout(() => { if (!isInterrupted) unlock("白嫖的终点"); }, 60000);
+      
+      box.querySelector("#devName").addEventListener("click", () => {
+        isInterrupted = true;
+        clearTimeout(timer);
+        window.open("https://b23.tv/hNPgQ9H", "_blank");
+        overlay.remove();
+        aboutChain();
+      });
+      // 如果提前关闭了弹窗，也清除计时器
+      box.querySelector(".modal-btns button").addEventListener("click", () => clearTimeout(timer));
+    }
+  });
+}
+
+async function aboutChain() {
+  await modal({ title: "开发者", html: "<p>给我投个币可以吗？球球啦……</p>" });
+  await modal({ title: "开发者", html: "<p>真的不答应投吗……</p>" });
+  await modal({ title: "开发者", html: "<p>你真是个傲娇鬼……哼，好吧，我也管不到你QAQ！</p>" });
+  await modal({ title: "开发者", html: "<p>反正不是我……</p>" });
+  crash();
+}
+
+function crash() {
+  localStorage.setItem(ANGRY_KEY, "true");
+  sessionStorage.setItem("mcFixer.crashed", "true");
+  document.body.innerHTML = '<div class="crash-screen"><pre>[FATAL] 连接已断开……\njava.lang.RuntimeException: 傲娇鬼不投币\n    at mc.fixer.about.Developer.betray(Developer.java:404)\n\nSystem.exit(0);</pre><div class="tip">【程序已闪退】3 秒后自动重启……</div></div>';
+  setTimeout(() => location.reload(), 3000);
+}
+
+function angryRoom() {
+  modal({
+    title: "开发者的房间",
+    html: '<div class="room"><div class="door">🚪🔒</div><p class="err">门锁死了。开发者还在生气。</p><p class="dim">门缝里塞出来一张皱巴巴的纸条，上面潦草地写着：</p><div class="note"><span class="qwq" id="qwq">QWQ</span></div></div>',
+    buttons: [{ text: "离开", value: "leave" }],
+    onMount(box, overlay) {
+      box.querySelector("#qwq").addEventListener("click", () => {
+        localStorage.removeItem(ANGRY_KEY);
+        overlay.remove();
+        out("【系统】锁已解除，开发者原谅你了（大概）。", "gold");
+        unlock("赛博黑客");
+        saveState();
+      });
+    }
+  });
+}
+
+/* ============================================================
+ *  8. 版本号大魔王
+ * ============================================================ */
+let vClickTimes = [];
+function setVersion(html, cls) {
+  versionEl.innerHTML = html;
+  versionEl.className = "version" + (cls ? " " + cls : "");
+  saveState();
+}
+
+versionEl.addEventListener("click", () => {
+  if (stats.vAngry) return;
+  const now = Date.now();
+  vClickTimes = vClickTimes.filter(t => now - t < 5000);
+  vClickTimes.push(now);
+  const n = vClickTimes.length;
+
+  if (n === 1) out("喵？", "dim");
+  else if (n === 3) setVersion("v1.0 Alpha (你烦不烦啊？)");
+  else if (n === 10) setVersion("v1.0 Alpha (别点了！！)", "warn");
+  else if (n >= 15) triggerDevil();
+});
+
+function triggerDevil() {
+  stats.vAngry = true;
+  vClickTimes = [];
+  window.open("https://b23.tv/wBpoyKl", "_blank");
+  setVersion('v1.0 Alpha 🐶', "devil");
+  out("版本号大人被你激怒了！！！", "err");
+  out("（提示：也许该右键点一下那只狗头？）", "dim");
+}
+
+versionEl.addEventListener("contextmenu", async e => {
+  if (!stats.vAngry) return;
+  e.preventDefault();
+  const v = await promptDialog("版本号大魔王", "说点什么吧？（大魔王似乎在等一个词）");
+  if (v === null) return;
+  
+  if (v.trim().toUpperCase() === "GUN") {
+    stats.vAngry = false;
+    setVersion("v1.0 Alpha");
+    out("版本号大魔王骂骂咧咧地 GUN 了。", "gold");
+    unlock("大魔王的屈服");
+  } else {
+    await modal({ title: "版本号大魔王", html: '<p class="err">"你算老几？"</p><p class="dim">版本号依旧是 🐶</p>' });
+  }
+});
+
+/* ============================================================
+ *  9. 视图切换与启动初始化
+ * ============================================================ */
+$("btnViewAch").addEventListener("click", () => { renderAchievements(); $("viewMain").classList.add("hidden"); $("viewAch").classList.remove("hidden"); });
+$("btnBackMain").addEventListener("click", () => { $("viewAch").classList.add("hidden"); $("viewMain").classList.remove("hidden"); });
+
+(function init() {
+  // 恢复日志与输出
+  if (localStorage.getItem("mcFixer.log")) logInput.value = localStorage.getItem("mcFixer.log");
+  if (localStorage.getItem("mcFixer.output")) outputEl.innerHTML = localStorage.getItem("mcFixer.output");
+  
+  // 恢复大魔王状态
+  if (stats.vAngry) {
+    versionEl.innerHTML = 'v1.0 Alpha 🐶';
+    versionEl.classList.add("devil");
+  }
+
+  // 检查闪退记录 (电子闭门羹)
+  if (sessionStorage.getItem("mcFixer.crashed") === "true") {
+    sessionStorage.removeItem("mcFixer.crashed");
+    unlock("电子闭门羹");
+  }
+
+  // 初始化终端提示
+  if (!outputEl.innerHTML.trim()) {
+    out("MC 赛博急救与空投系统 v1.0 Alpha 已启动。", "ok");
+    out("请粘贴日志，或点击右上方“成就殿堂”查看收集进度。", "dim");
+  } else {
+    out("【系统】已恢复上次的工作进度。", "dim");
+  }
+})();
+</script>
+</body>
+</html>
