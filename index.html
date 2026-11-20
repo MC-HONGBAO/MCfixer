@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>MC 赛博急救与空投系统 v1.0</title>
+<title>MC 赛博急救与空投系统 v1.1</title>
 <style>
   /* ============================================================
-   *  通用变量
+   *  通用变量（主题换色就是改这一层变量）
    * ============================================================ */
   :root {
     --bg: #0b0d10; --panel: #111419; --border: #232a33;
-    --text: #b9c4d0; --dim: #4b5563;
+    --border-hi: #3a4654; --deep: #08090b; --panel-2: #161b22;
+    --head-from: #12161c; --footer: #0e1116; --title: #e6edf5;
+    --text: #b9c4d0; --input-text: #c8d3df; --dim: #4b5563;
     --green: #35e07a; --cyan: #46d3ff; --yellow: #ffd23f;
     --red: #ff4d5e; --gold: #ffb648;
+    --glow: rgba(53,224,122,.10);
   }
   * { box-sizing: border-box; }
   html, body {
@@ -35,9 +38,9 @@
     padding: 10px 16px;
     padding-top: calc(10px + env(safe-area-inset-top, 0px));
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, #12161c 0%, #0b0d10 100%);
+    background: linear-gradient(180deg, var(--head-from) 0%, var(--bg) 100%);
   }
-  .title { color: #e6edf5; font-size: 15px; letter-spacing: 1px; }
+  .title { color: var(--title); font-size: 15px; letter-spacing: 1px; }
   .title .dot { color: var(--green); margin-right: 6px; }
   .head-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
@@ -46,7 +49,7 @@
     flex-wrap: wrap; gap: 8px;
     padding: 8px 16px;
     padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-    border-top: 1px solid var(--border); background: #0e1116;
+    border-top: 1px solid var(--border); background: var(--footer);
   }
   .hidden-hint { color: #2b3037; font-size: 12px; text-align: right; line-height: 1.4; }
 
@@ -54,7 +57,7 @@
   .version {
     cursor: pointer; user-select: none; color: var(--cyan); font-size: 13px;
     padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px;
-    background: #0e1116; transition: all .15s;
+    background: var(--footer); transition: all .15s;
   }
   .version:hover { border-color: var(--cyan); }
   .version.warn { color: var(--yellow); border-color: #5c4a12; }
@@ -77,22 +80,22 @@
   .panel-title { color: var(--dim); font-size: 12px; letter-spacing: 1px; flex: none; }
 
   textarea {
-    flex: 1; width: 100%; resize: none; min-height: 0; background: #08090b; color: #c8d3df;
+    flex: 1; width: 100%; resize: none; min-height: 0; background: var(--deep); color: var(--input-text);
     border: 1px solid var(--border); border-radius: 4px; padding: 10px; font-family: inherit; outline: none; line-height: 1.55;
   }
-  textarea:focus { border-color: #2f6f55; box-shadow: 0 0 0 2px rgba(53,224,122,.08); }
+  textarea:focus { border-color: var(--green); box-shadow: 0 0 0 2px var(--glow); }
 
   .row { display: flex; gap: 8px; flex-wrap: wrap; flex: none; }
   button {
-    font-family: inherit; font-size: 13px; cursor: pointer; background: #161b22; color: var(--text);
+    font-family: inherit; font-size: 13px; cursor: pointer; background: var(--panel-2); color: var(--text);
     border: 1px solid var(--border); border-radius: 4px; padding: 7px 14px; transition: all .12s;
     -webkit-tap-highlight-color: transparent;
   }
-  button:hover { background: #1d2530; color: #fff; border-color: #3a4654; }
+  button:hover { background: #1d2530; color: #fff; border-color: var(--border-hi); }
   button:active { transform: translateY(1px); }
 
   .output {
-    flex: 1; overflow-y: auto; min-height: 0; background: #08090b; border: 1px solid var(--border);
+    flex: 1; overflow-y: auto; min-height: 0; background: var(--deep); border: 1px solid var(--border);
     border-radius: 4px; padding: 10px; font-size: 13px; line-height: 1.65;
   }
   .line { white-space: pre-wrap; word-break: break-all; }
@@ -120,7 +123,7 @@
     animation: fadeIn .12s ease-out; padding: 16px;
   }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal { width: min(520px, 92vw); max-height: 88vh; display: flex; flex-direction: column; background: #12161c; border: 1px solid #2c3642; border-radius: 6px; box-shadow: 0 16px 50px rgba(0,0,0,.8); }
+  .modal { width: min(520px, 92vw); max-height: 88vh; display: flex; flex-direction: column; background: var(--head-from); border: 1px solid var(--border-hi); border-radius: 6px; box-shadow: 0 16px 50px rgba(0,0,0,.8); }
   .modal-title { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--cyan); font-size: 13px; letter-spacing: 1px; flex: none; }
   .modal-body { padding: 16px 14px; font-size: 13px; line-height: 1.75; overflow-y: auto; }
   .modal-body p { margin: 0 0 8px; }
@@ -129,7 +132,7 @@
   .modal-body li { margin-bottom: 4px; }
   .modal-body code { background: #000; color: var(--gold); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
   .modal-btns { padding: 10px 14px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--border); flex: none; }
-  .dlg-input { width: 100%; margin-top: 10px; padding: 8px 10px; background: #08090b; color: #c8d3df; border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 13px; outline: none; }
+  .dlg-input { width: 100%; margin-top: 10px; padding: 8px 10px; background: var(--deep); color: var(--input-text); border: 1px solid var(--border); border-radius: 4px; font-family: inherit; font-size: 13px; outline: none; }
   .dlg-input:focus { border-color: var(--cyan); }
 
   .dev-name { color: var(--cyan); cursor: pointer; border-bottom: 1px dashed var(--cyan); padding-bottom: 1px; transition: all .15s; }
@@ -137,10 +140,51 @@
   .qwq { cursor: pointer; color: #8a94a2; border: 1px dashed #3a424e; border-radius: 4px; padding: 4px 12px; display: inline-block; transition: all .15s; letter-spacing: 2px; }
   .qwq:hover { color: var(--green); border-color: var(--green); text-shadow: 0 0 12px rgba(53,224,122,.8); }
   .room { text-align: center; } .door { font-size: 44px; margin: 6px 0 14px; }
-  .note { margin-top: 10px; padding: 10px; border: 1px dashed #3a424e; border-radius: 4px; background: #0d1015; }
+  .note { margin-top: 10px; padding: 10px; border: 1px dashed #3a424e; border-radius: 4px; background: var(--bg); }
 
-  .guide-box { background: rgba(70,211,255,.07); border: 1px solid rgba(70,211,255,.35); border-radius: 6px; padding: 12px; margin: 10px 0; }
-  .guide-box.gold { background: rgba(255,182,72,.07); border-color: rgba(255,182,72,.35); }
+  /* ================= 个性化：主题与梗体诊断 ================= */
+  .pers-item {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    margin-bottom: 10px; padding: 12px; border-radius: 6px; line-height: 1.5;
+  }
+  .pers-item .pers-ico { font-size: 22px; flex: none; }
+  .pers-item .pers-name { color: var(--cyan); font-size: 14px; display: block; margin-bottom: 2px; }
+  .pers-item .pers-desc { color: var(--dim); font-size: 12px; display: block; }
+  .pers-item .pers-state { margin-left: auto; font-size: 11px; color: var(--gold); flex: none; }
+  .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; margin: 10px 0; }
+  .theme-swatch {
+    display: flex; flex-direction: column; gap: 6px; padding: 9px; border-radius: 5px;
+    border: 1px solid var(--border); background: var(--bg); cursor: pointer; text-align: left;
+  }
+  .theme-swatch:hover { border-color: var(--border-hi); }
+  .theme-swatch.active { border-color: var(--green); box-shadow: 0 0 0 1px var(--green) inset; }
+  .swatch-dots { display: flex; gap: 4px; }
+  .swatch-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+  .swatch-name { font-size: 12px; color: var(--text); }
+  .theme-swatch.active .swatch-name { color: var(--green); }
+  .theme-preview {
+    margin-top: 8px; padding: 10px; border: 1px dashed var(--border-hi); border-radius: 5px;
+    background: var(--deep); line-height: 1.8; font-size: 13px;
+  }
+  .custom-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; font-size: 12px; color: var(--dim); flex-wrap: wrap; }
+  .custom-row input[type="color"] { width: 52px; height: 34px; padding: 2px; background: var(--deep); border: 1px solid var(--border); border-radius: 4px; }
+  .btn-danger { color: var(--red); border-color: var(--red); background: transparent; }
+  .btn-danger:hover { color: #fff; background: rgba(255,77,94,.15); border-color: var(--red); }
+  .switch-btn { min-width: 92px; }
+  .switch-btn.on { color: var(--bg); background: var(--green); border-color: var(--green); font-weight: bold; }
+
+  .guide-box {
+    background: rgba(70,211,255,.07);
+    background: color-mix(in srgb, var(--cyan) 8%, transparent);
+    border: 1px solid rgba(70,211,255,.35);
+    border-color: color-mix(in srgb, var(--cyan) 38%, transparent);
+    border-radius: 6px; padding: 12px; margin: 10px 0;
+  }
+  .guide-box.gold {
+    background: rgba(255,182,72,.07);
+    background: color-mix(in srgb, var(--gold) 8%, transparent);
+    border-color: color-mix(in srgb, var(--gold) 38%, transparent);
+  }
   .guide-box h4 { margin: 0 0 8px; font-size: 13px; color: var(--cyan); }
   .guide-box.gold h4 { color: var(--gold); }
 
@@ -161,7 +205,7 @@
     flex-wrap: wrap; gap: 8px; padding: 10px 16px;
     padding-top: calc(10px + env(safe-area-inset-top, 0px));
     border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, #12161c 0%, #0b0d10 100%);
+    background: linear-gradient(180deg, var(--head-from) 0%, var(--bg) 100%);
   }
   #viewDownloader .title { color: #e6edf5; font-size: 15px; letter-spacing: 1px; }
   #viewDownloader .title .dot { color: var(--cyan); margin-right: 6px; }
@@ -190,16 +234,16 @@
   #viewDownloader .panel-title { color: var(--dim); font-size: 12px; letter-spacing: 1px; flex: none; }
 
   #viewDownloader input, #viewDownloader select, #viewDownloader button, #viewDownloader textarea {
-    font-family: inherit; font-size: 13px; background: #161b22; color: var(--text);
+    font-family: inherit; font-size: 13px; background: var(--panel-2); color: var(--text);
     border: 1px solid var(--border); border-radius: 4px; padding: 7px 10px;
     outline: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     min-height: 36px; width: 100%;
   }
   #viewDownloader input:focus, #viewDownloader select:focus, #viewDownloader textarea:focus {
-    border-color: #2f6f55; box-shadow: 0 0 0 2px rgba(53,224,122,.08);
+    border-color: var(--green); box-shadow: 0 0 0 2px var(--glow);
   }
   #viewDownloader button { cursor: pointer; transition: all .12s; }
-  #viewDownloader button:hover:not(:disabled) { background: #1d2530; color: #fff; border-color: #3a4654; }
+  #viewDownloader button:hover:not(:disabled) { background: #1d2530; color: #fff; border-color: var(--border-hi); }
   #viewDownloader button:active:not(:disabled) { transform: translateY(1px); }
 
   #viewDownloader .btn-gold { border-color: var(--gold); color: var(--gold); background: rgba(255,182,72,.05); }
@@ -214,14 +258,14 @@
     display: flex; align-items: center; justify-content: space-between;
     gap: 8px; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 13px;
   }
-  #viewDownloader .version-item:hover { background: #161b22; }
+  #viewDownloader .version-item:hover { background: var(--panel-2); }
   #viewDownloader .version-item.active { background: rgba(70,211,255,.1); color: var(--cyan); }
   #viewDownloader .version-id { font-weight: bold; }
 
   #viewDownloader .right-col { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
   #viewDownloader .links-panel { flex: 1; display: flex; flex-direction: column; min-height: 0; }
   #viewDownloader .links-container {
-    flex: 1; overflow-y: auto; background: #08090b;
+    flex: 1; overflow-y: auto; background: var(--deep);
     border: 1px solid var(--border); border-radius: 4px; padding: 12px;
     display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch;
   }
@@ -239,11 +283,11 @@
     background: #000; color: #888; padding: 8px; border-radius: 4px;
     font-size: 11px; word-break: break-all; user-select: all; border: 1px solid #1a2028; margin-bottom: 8px;
   }
-  #viewDownloader .btn-copy { min-height: 32px; font-size: 13px; background: #161b22; color: var(--green); border-color: #1e4a33; }
+  #viewDownloader .btn-copy { min-height: 32px; font-size: 13px; background: var(--panel-2); color: var(--green); border-color: var(--border-hi); }
 
   #viewDownloader .terminal-panel { flex: 0.5; display: flex; flex-direction: column; min-height: 0; }
   #viewDownloader .output {
-    flex: 1; overflow-y: auto; min-height: 0; background: #08090b;
+    flex: 1; overflow-y: auto; min-height: 0; background: var(--deep);
     border: 1px solid var(--border); border-radius: 4px; padding: 10px;
     font-size: 12px; line-height: 1.65; -webkit-overflow-scrolling: touch;
   }
@@ -259,7 +303,7 @@
     flex-wrap: wrap; gap: 8px;
     padding: 6px 16px;
     padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
-    border-top: 1px solid var(--border); background: #0e1116; font-size: 11px; color: var(--dim);
+    border-top: 1px solid var(--border); background: var(--footer); font-size: 11px; color: var(--dim);
   }
   #viewDownloader .status-dot {
     display: inline-block; width: 6px; height: 6px; border-radius: 50%;
@@ -368,14 +412,15 @@
       <button id="btnGuide">❓ 使用指南</button>
       <button id="btnViewDl">📥 下载助手</button>
       <button id="btnViewAch">🏆 成就殿堂</button>
-      <div id="version" class="version">v1.0</div>
+      <button id="btnPersonalize">🎛️ 个性化</button>
+      <div id="version" class="version">v1.1</div>
     </div>
   </header>
 
   <main>
     <section class="panel">
       <div class="panel-title">// 日志输入 / LOG INPUT</div>
-      <textarea id="logInput" placeholder="把 crash-report / latest.log 的内容粘贴到这里……&#10;支持 1.13+ 新版日志，也支持 1.7.10 ~ 1.12.2 的旧版日志。&#10;也可以点下面的「📁 读取文件」，或直接把文件拖进窗口。"></textarea>
+      <textarea id="logInput" placeholder="把 crash-report / latest.log 的内容粘贴到这里……&#10;支持 1.13+ / 26.1+ 新版日志，也支持 1.7.10 ~ 1.12.2 的旧版日志，甚至 1.6.4 / Beta / Alpha 的远古日志。&#10;整篇日志都会被识别，不再截断。&#10;也可以点下面的「📁 读取文件」，或直接把文件拖进窗口。"></textarea>
       <div class="row">
         <button id="btnRead">📁 读取文件</button>
         <button id="btnScanMc">🔍 扫描MC目录</button>
@@ -400,8 +445,11 @@
 <!-- ================= 成就殿堂界面 ================= -->
 <div id="viewAch" class="hidden">
   <header>
-    <div class="title"><span class="dot">🏆</span>成就殿堂 (已解锁 <span id="achProgress">0/30</span>)</div>
-    <button id="btnBackMain">⬅ 返回老中医</button>
+    <div class="title"><span class="dot">🏆</span>成就殿堂 (已解锁 <span id="achProgress">0/35</span>)</div>
+    <div class="head-right">
+      <button id="btnResetAch" class="btn-danger">🗑️ 一键清零所有成就</button>
+      <button id="btnBackMain">⬅ 返回老中医</button>
+    </div>
   </header>
   <div class="ach-container" id="achList"></div>
 </div>
@@ -535,7 +583,6 @@
  * ============================================================ */
 const $ = id => document.getElementById(id);
 const logInput = $("logInput"), outputEl = $("output"), versionEl = $("version");
-const MAX_LEN = 5000;
 
 // 用 Object.assign 兜底老存档：老存档没有的新字段会保留默认值
 const DEFAULT_STATS = {
@@ -550,10 +597,11 @@ const DEFAULT_STATS = {
   linkCopyCount: 0,
   guardBlockCount: 0,
   mirrorUsed: [],
-  // —— v1.0 新增 ——
+  // —— 诊断统计字段（自 v1.0 保留） ——
   diagnoseCount: 0,     // 成功诊断次数（见多识广）
   typedChars: 0,        // 键盘输入字符数（键盘粉碎者）
   opCount: 0,           // 主界面按钮点击次数（终端指挥官）
+  themeSwitchCount: 0,  // 主题切换次数（换皮大师）
   onboarded: false      // 是否看过新手引导
 };
 // 注意：必须新建对象，不能污染 DEFAULT_STATS 默认值
@@ -578,7 +626,7 @@ function showView(id) {
 }
 
 /* ============================================================
- *  3. 成就数据库配置（30 个）
+ *  3. 成就数据库配置（35 个）
  * ============================================================ */
 const ACH_DATA = {
   /* ---------- 核心诊断类 ---------- */
@@ -603,12 +651,16 @@ const ACH_DATA = {
     text: "版本号大魔王终于安静了。你赢了，但别到处说——它其实是个傲娇，被 GUN 了还偷偷给你点了个赞。"
   },
   "时光机修理工": {
-    cat: "核心诊断类", desc: "成功诊断一份 1.13 之前的旧版日志。",
-    text: "你成功诊断了一份来自 1.13 之前的日志。那时候还没有 main 线程，没有 3D 皮肤，整合包里的模组也还很讲武德。欢迎回到过去，记得给老版本配 Java 8。"
+    cat: "核心诊断类", desc: "成功诊断一份 1.13 之前的旧版日志（含 1.6.4 / Beta / Alpha）。",
+    text: "你成功诊断了一份来自 1.13 之前的日志。那时候还没有 main 线程，没有 3D 皮肤，整合包里的模组也还很讲武德。欢迎回到过去，1.7.10 记得配 Java 8，1.6.4 及更早配 Java 7 就行。"
   },
   "见多识广": {
     cat: "核心诊断类", desc: "累计诊断日志 50 次。",
     text: "五十次诊断，五十次崩溃，五十次‘这破游戏我不玩了’，然后第五十一次打开启动器。你不是在修游戏，你是在修行。"
+  },
+  "周末战神": {
+    cat: "核心诊断类", desc: "在周六或周日成功诊断一份日志。",
+    text: "周末，本应属于床、属于电影、属于不用回消息的自由。而你选择把它献给了崩掉的整合包。游戏可以崩，你的周末不会重开，但下一份日志已经在路上了。"
   },
 
   /* ---------- 整活与隐藏触发类 ---------- */
@@ -652,11 +704,23 @@ const ACH_DATA = {
     cat: "整活与隐藏触发类", desc: "在主界面累计点击按钮 100 次。",
     text: "一百次操作，一百次希望。你的鼠标点击已经形成了肌肉记忆，你的手指比你的大脑更懂这个界面。指挥官，辛苦了。"
   },
+  "下次一定": {
+    cat: "整活与隐藏触发类", desc: "在投币弹窗里把「下次一定」一路点到底，把开发者气到闪退。",
+    text: "下次一定，下次一定，下次一定。开发者的门被你焊死了，人也气哭了。你收获了快乐，他收获了眼泪，只有那枚硬币始终没有出现。"
+  },
+  "早八人": {
+    cat: "整活与隐藏触发类", desc: "在早上 6:00 到 8:00 之间打开本工具。",
+    text: "早八人，早八魂，早八都是人上人。别人在赶地铁，你在修模组；别人的咖啡还没醒，你的崩溃日志已经醒了。佩服，真的佩服。"
+  },
+  "换皮大师": {
+    cat: "整活与隐藏触发类", desc: "在个性化里累计切换主题 5 次。",
+    text: "赛博绿、熔岩红、量子紫……你换主题的速度比你修 bug 还快。外观换了五套，报错还是那一条。不过没关系，至少界面顺眼了。"
+  },
 
   /* ---------- 开发者专属与纪念类 ---------- */
   "十年一梦": {
     cat: "开发者专属与纪念类", desc: "工具累计运行时间达到 10 小时。",
-    text: "工具累计运行 10 小时了。从网易到第三方，从 1.7.10 到 1.21，方块世界没变，只是我们长大了。而你，还在这破电脑前修模组。"
+    text: "工具累计运行 10 小时了。从网易到第三方，从 1.6.4 到 26.1，方块世界没变，只是我们长大了。而你，还在这破电脑前修模组。"
   },
   "赛博老兵的遗迹": {
     cat: "开发者专属与纪念类", desc: "检测到 .minecraft 目录且版本大于5个。",
@@ -673,6 +737,10 @@ const ACH_DATA = {
   "OptiFine 受害者": {
     cat: "开发者专属与纪念类", desc: "诊断出一次 OptiFine 相关错误。",
     text: "OptiFine，一个让无数整合包作者又爱又恨的名字。你不是第一个受害者，也不会是最后一个。Iris + Sodium 了解一下？"
+  },
+  "投币之恩": {
+    cat: "开发者专属与纪念类", desc: "在投币请求中选择「好吧」，痛快地投了一枚硬币。",
+    text: "谢谢你，真的。虽然看不见你的硬币，但开发者已经感受到了——那可是比红石还稀有的温暖。这软件不要钱，但你的支持它记一辈子。"
   },
   "全成就收集者": {
     cat: "开发者专属与纪念类", desc: "解锁其余所有成就。",
@@ -813,6 +881,263 @@ async function promptDialog(title, label) {
 }
 
 /* ============================================================
+ *  4.5 个性化：主题颜色选择 / 梗体诊断
+ * ============================================================ */
+const THEME_KEY = "mcFixer.theme";
+const THEME_ACCENT_KEY = "mcFixer.customAccent";
+const MEME_KEY = "mcFixer.meme";
+
+function makeTheme(id, name, o) {
+  return {
+    id, name,
+    dots: [o.green, o.cyan, o.gold],
+    vars: {
+      "--bg": o.bg, "--panel": o.panel, "--border": o.border,
+      "--border-hi": o.borderHi, "--deep": o.deep, "--panel-2": o.panel2,
+      "--head-from": o.headFrom, "--footer": o.footer,
+      "--title": "#e6edf5", "--text": "#b9c4d0", "--input-text": "#c8d3df",
+      "--dim": "#4b5563", "--yellow": o.yellow || "#ffd23f",
+      "--green": o.green, "--cyan": o.cyan, "--gold": o.gold,
+      "--red": o.red || "#ff4d5e", "--glow": o.glow
+    }
+  };
+}
+
+const THEMES = [
+  makeTheme("cyber", "赛博绿", {
+    bg: "#0b0d10", panel: "#111419", border: "#232a33", borderHi: "#3a4654",
+    deep: "#08090b", panel2: "#161b22", headFrom: "#12161c", footer: "#0e1116",
+    green: "#35e07a", cyan: "#46d3ff", gold: "#ffb648", glow: "rgba(53,224,122,.10)"
+  }),
+  makeTheme("crimson", "熔岩红", {
+    bg: "#100b0d", panel: "#191114", border: "#33202a", borderHi: "#55303d",
+    deep: "#0c0709", panel2: "#211419", headFrom: "#1c1216", footer: "#150f12",
+    green: "#ff5c6c", cyan: "#ff9e64", gold: "#ffd166", glow: "rgba(255,92,108,.12)"
+  }),
+  makeTheme("violet", "量子紫", {
+    bg: "#0d0b12", panel: "#15111c", border: "#2b2338", borderHi: "#443562",
+    deep: "#09070d", panel2: "#1c1624", headFrom: "#17131f", footer: "#110e17",
+    green: "#b388ff", cyan: "#7aa2ff", gold: "#ffd166", glow: "rgba(179,136,255,.14)"
+  }),
+  makeTheme("frost", "冰霜蓝", {
+    bg: "#080d12", panel: "#0f1620", border: "#203040", borderHi: "#33506a",
+    deep: "#060a0e", panel2: "#14202c", headFrom: "#101a24", footer: "#0b131b",
+    green: "#56d6ff", cyan: "#9be7ff", gold: "#ffe066", glow: "rgba(86,214,255,.12)"
+  }),
+  makeTheme("amber", "琥珀金", {
+    bg: "#100d08", panel: "#191409", border: "#342a14", borderHi: "#5c4a12",
+    deep: "#0b0805", panel2: "#211a0d", headFrom: "#1e1809", footer: "#150f07",
+    green: "#ffc857", cyan: "#ff9f43", gold: "#ffe08a", glow: "rgba(255,200,87,.12)"
+  }),
+  makeTheme("lime", "荧光青柠", {
+    bg: "#0b1008", panel: "#121a0c", border: "#24331a", borderHi: "#3c5529",
+    deep: "#070b05", panel2: "#182410", headFrom: "#151e0d", footer: "#0d1309",
+    green: "#b6ff3d", cyan: "#4dffd2", gold: "#fff95e", glow: "rgba(182,255,61,.12)"
+  })
+];
+
+let currentThemeId = localStorage.getItem(THEME_KEY) || "cyber";
+let currentAccent = localStorage.getItem(THEME_ACCENT_KEY) || "#35e07a";
+let memeMode = localStorage.getItem(MEME_KEY) === "1";
+
+function hexToHsl(hex) {
+  const m = String(hex).replace("#", "").match(/^[0-9a-f]{6}$/i);
+  const h6 = m ? m[0] : "35e07a";
+  const r = parseInt(h6.slice(0, 2), 16) / 255;
+  const g = parseInt(h6.slice(2, 4), 16) / 255;
+  const b = parseInt(h6.slice(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return [Math.round(h), Math.round(s * 100), Math.round(l * 100)];
+}
+
+function hslToHex(h, s, l) {
+  h = ((h % 360) + 360) % 360;
+  s = Math.max(0, Math.min(100, s)) / 100;
+  l = Math.max(0, Math.min(100, l)) / 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  let r = 0, g = 0, b = 0;
+  if (h < 60) [r, g, b] = [c, x, 0];
+  else if (h < 120) [r, g, b] = [x, c, 0];
+  else if (h < 180) [r, g, b] = [0, c, x];
+  else if (h < 240) [r, g, b] = [0, x, c];
+  else if (h < 300) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+  const to = v => Math.round((v + m) * 255).toString(16).padStart(2, "0");
+  return `#${to(r)}${to(g)}${to(b)}`;
+}
+
+function rgbaFromHex(hex, alpha) {
+  const h6 = String(hex).replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(h6)) return `rgba(53,224,122,${alpha})`;
+  const r = parseInt(h6.slice(0, 2), 16);
+  const g = parseInt(h6.slice(2, 4), 16);
+  const b = parseInt(h6.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function themeName(id) {
+  if (id === "custom") return "自定义";
+  const t = THEMES.find(x => x.id === id);
+  return t ? t.name : THEMES[0].name;
+}
+
+function applyTheme(id, accent) {
+  const base = THEMES[0].vars;
+  let vars;
+  if (id === "custom" && accent) {
+    const [h, s, l] = hexToHsl(accent);
+    vars = Object.assign({}, base, {
+      "--green": accent,
+      "--cyan": hslToHex(h + 28, Math.min(100, Math.max(45, s)), Math.min(82, Math.max(58, l + 8))),
+      "--gold": hslToHex(h + 70, Math.min(100, Math.max(50, s + 5)), Math.min(86, Math.max(62, l + 14))),
+      "--glow": rgbaFromHex(accent, .13)
+    });
+  } else {
+    const preset = THEMES.find(x => x.id === id);
+    vars = (preset || THEMES[0]).vars;
+    id = preset ? preset.id : THEMES[0].id;
+  }
+  Object.keys(vars).forEach(k => document.documentElement.style.setProperty(k, vars[k]));
+  currentThemeId = id;
+  if (id === "custom" && accent) currentAccent = accent;
+  localStorage.setItem(THEME_KEY, id);
+  if (id === "custom" && accent) localStorage.setItem(THEME_ACCENT_KEY, accent);
+}
+
+function setMemeMode(on) {
+  memeMode = !!on;
+  localStorage.setItem(MEME_KEY, memeMode ? "1" : "0");
+}
+
+function openPersonalize() {
+  modal({
+    title: "🎛️ 个性化",
+    html: `
+      <p class="dim" style="margin-top:0; font-size:12px;">只改外观和文案，不影响诊断规则本身。</p>
+      <button class="pers-item" id="persTheme">
+        <span class="pers-ico">🎨</span>
+        <span><span class="pers-name">主题颜色选择</span><span class="pers-desc">给整个急救站换一套配色，带自定义取色</span></span>
+        <span class="pers-state">${themeName(currentThemeId)}</span>
+      </button>
+      <button class="pers-item" id="persMeme">
+        <span class="pers-ico">🤖</span>
+        <span><span class="pers-name">梗体诊断</span><span class="pers-desc">让诊断锐评变成互联网浓度超标版</span></span>
+        <span class="pers-state">${memeMode ? "已开启" : "已关闭"}</span>
+      </button>
+    `,
+    buttons: [{ text: "关闭", value: null }],
+    onMount(box, overlay) {
+      box.querySelector("#persTheme").addEventListener("click", () => { overlay.remove(); openThemePicker(); });
+      box.querySelector("#persMeme").addEventListener("click", () => { overlay.remove(); openMemeDialog(); });
+    }
+  });
+}
+
+function recordThemeSwitch() {
+  stats.themeSwitchCount = (stats.themeSwitchCount || 0) + 1;
+  saveStats();
+  if (stats.themeSwitchCount >= 5) unlock("换皮大师");
+}
+
+function openThemePicker() {
+  const swatches = THEMES.map(t => `
+    <div class="theme-swatch ${currentThemeId === t.id ? "active" : ""}" data-theme-id="${t.id}">
+      <span class="swatch-dots">${t.dots.map(c => `<span class="swatch-dot" style="background:${c}"></span>`).join("")}</span>
+      <span class="swatch-name">${t.name}</span>
+    </div>`).join("");
+
+  modal({
+    title: "🎨 主题颜色选择",
+    html: `
+      <p style="margin-top:0; color:var(--dim); font-size:12px;">点一下立即生效，会自动记住。</p>
+      <div class="theme-grid">${swatches}</div>
+      <div class="custom-row">
+        <span>自定义主色：</span>
+        <input type="color" id="customAccent" value="${currentAccent}" />
+        <button id="applyCustom" style="padding:5px 10px;">应用自定义</button>
+        <button id="resetTheme" style="padding:5px 10px;">恢复默认</button>
+      </div>
+      <div class="theme-preview" id="themePreview">
+        预览：<span class="ok">✔ 正常</span> · <span class="warn">⚠ 警告</span> · <span class="err">✖ 错误</span> · <span class="gold">🏆 成就</span> · <span class="dim">说明文字</span>
+      </div>
+    `,
+    buttons: [{ text: "完成", value: true }],
+    onMount(box) {
+      const refresh = () => {
+        box.querySelectorAll(".theme-swatch").forEach(el => {
+          el.classList.toggle("active", el.dataset.themeId === currentThemeId);
+        });
+      };
+      box.querySelectorAll(".theme-swatch").forEach(el => {
+        el.addEventListener("click", () => {
+          applyTheme(el.dataset.themeId);
+          recordThemeSwitch();
+          refresh();
+          out(`🎨 已切换主题：${themeName(el.dataset.themeId)}`, "dim");
+        });
+      });
+      const colorInput = box.querySelector("#customAccent");
+      box.querySelector("#applyCustom").addEventListener("click", () => {
+        applyTheme("custom", colorInput.value || "#35e07a");
+        recordThemeSwitch();
+        colorInput.value = currentAccent;
+        refresh();
+        out("🎨 已应用自定义主色。", "dim");
+      });
+      box.querySelector("#resetTheme").addEventListener("click", () => {
+        currentAccent = "#35e07a";
+        applyTheme("cyber", currentAccent);
+        recordThemeSwitch();
+        colorInput.value = currentAccent;
+        refresh();
+        out("🎨 已恢复默认主题：赛博绿。", "dim");
+      });
+    }
+  });
+}
+
+function openMemeDialog() {
+  modal({
+    title: "🤖 梗体诊断",
+    html: `
+      <p style="margin-top:0;">开启后，诊断结果里的【锐评】和【处方】会切换成互联网梗体文案——信息量不变，就是嘴上不饶人。</p>
+      <div class="guide-box">
+        <h4>示例</h4>
+        <p class="dim">普通版：<span class="warn">你的 Java 堆内存已经爆了。</span></p>
+        <p>梗体版：<span class="warn">你的 Java 堆已经撑到冒烟，内存条跪着求你放它下班。</span></p>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:12px;">
+        <span>当前状态：</span>
+        <button id="memeToggle" class="switch-btn ${memeMode ? "on" : ""}">${memeMode ? "已开启" : "已关闭"}</button>
+      </div>
+      <p class="dim" style="font-size:12px; margin-top:10px;">设置会自动保存，下次打开还是这个状态。</p>
+    `,
+    buttons: [{ text: "完成", value: true }],
+    onMount(box) {
+      const btn = box.querySelector("#memeToggle");
+      btn.addEventListener("click", () => {
+        setMemeMode(!memeMode);
+        btn.classList.toggle("on", memeMode);
+        btn.textContent = memeMode ? "已开启" : "已关闭";
+        out(memeMode ? "🤖 梗体诊断已开启，老中医开始说人话了（确信）。" : "🤖 梗体诊断已关闭，老中医恢复正经。", "dim");
+      });
+    }
+  });
+}
+
+/* ============================================================
  *  5. 新手引导
  * ============================================================ */
 function openGuide(isFirstTime) {
@@ -830,14 +1155,16 @@ function openGuide(isFirstTime) {
 
     <div class="guide-box gold">
       <h4>🕰️ 旧版日志兼容</h4>
-      <p>自动识别 <strong>1.13 之前</strong>（1.7.10 / 1.12.2 等）的旧版日志格式，<code>[Client thread/INFO]</code>、<code>[FML]</code>、<code>Missing mods: [...]</code> 这些老古董也能看懂。</p>
+      <p>自动识别 <strong>1.13 之前</strong>（1.7.10 / 1.12.2 等）的旧版日志格式，<code>[Client thread/INFO]</code>、<code>[FML]</code>、<code>Missing mods: [...]</code> 这些老古董也能看懂；连 <strong>1.6.4 / Beta / Alpha</strong> 的远古日志、以及 <strong>26.1+</strong> 的年度版本号（如 <code>26.1</code>、<code>25.4-snapshot-1</code>）也能识别。</p>
+      <p class="dim" style="font-size:12px;">Java 对照：1.6.4 及更早 → Java 7，1.7~1.16 → Java 8，1.17~1.20.4 → Java 17，1.20.5~1.21.x → Java 21，26.1+ → Java 25。另外 26.1 起官方不再混淆，1.21.11 及之前的模组需要重新编译才能用。</p>
     </div>
 
     <div class="guide-box">
       <h4>✨ 还有什么</h4>
       <ul>
-        <li>🏆 <strong>成就殿堂</strong>：30 个成就等你解锁，很多很搞，纯本地可完成</li>
+        <li>🏆 <strong>成就殿堂</strong>：35 个成就等你解锁，很多很搞，纯本地可完成</li>
         <li>📥 <strong>下载助手</strong>：PCL2 下架下载功能后的补全辅助，离线解析</li>
+        <li>🎛️ <strong>个性化</strong>：换主题颜色、开「梗体诊断」，让锐评更上头</li>
         <li>🐶 <strong>版本号</strong>：点它会……算了，你自己试</li>
       </ul>
     </div>
@@ -845,7 +1172,7 @@ function openGuide(isFirstTime) {
     <p class="dim" style="font-size:12px; margin-top:10px;">${isFirstTime ? "本提示只出现一次，之后可在顶部「❓ 使用指南」重新查看。" : "看完就关吧，日志还等着你修呢。"}</p>
   `;
   modal({
-    title: "👋 使用指南 · MC 赛博急救与空投系统 v1.0",
+    title: "👋 使用指南 · MC 赛博急救与空投系统 v1.1",
     html,
     buttons: [{ text: isFirstTime ? "开始使用" : "关闭", value: true }]
   }).then(() => {
@@ -904,7 +1231,7 @@ setInterval(() => {
 }, 1000);
 
 /* ============================================================
- *  7. 日志版本识别与旧版兼容
+ *  7. 日志版本识别与旧版兼容（1.7- / 1.13+ / 26.1+）
  * ============================================================ */
 
 // 比较版本号：versionLessThan("1.7.10", "1.13") === true
@@ -919,18 +1246,42 @@ function versionLessThan(ver, target) {
   return false;
 }
 
+// 从任意版本字符串里抠出数字版本号："Beta 1.7.3" -> "1.7.3"、"25.4-snapshot-1" -> "25.4"
+function normalizeVersion(ver) {
+  if (!ver) return null;
+  const m = String(ver).match(/(\d+(?:\.\d+){1,3})/);
+  return m ? m[1] : null;
+}
+
+// 26.1+ 的年度版本号（2026 年起启用）：26.1 / 26.1.2 / 25.4-snapshot-1
+function isNewEraVersion(ver) {
+  if (!ver) return false;
+  const v = normalizeVersion(ver);
+  if (!v) return false;
+  const major = parseInt(v, 10) || 0;
+  if (major >= 26) return true;
+  return major >= 25 && /-(?:snapshot|pre|rc)\d*/i.test(String(ver));
+}
+
 function detectGameVersion(text) {
   const pats = [
-    /Minecraft Version:\s*([\d][\w.-]*)/i,
-    /--fml\.mcVersion,?\s*([\d][\w.-]*)/i,
-    /--version,?\s*([\d][\w.-]*)/i,
-    /Loading Minecraft\s+([\d][\w.-]*)/i,
-    /for Minecraft\s+([\d][\w.-]*)/i,
-    /Minecraft\s+([\d][\w.-]*)\s+with/i
+    /Minecraft Version:\s*([^\s,;]+)/i,
+    /--fml\.mcVersion,?\s*([^\s,;]+)/i,
+    /--version,?\s*([^\s,;]+)/i,
+    /Loading Minecraft\s+([^\s,;]+)/i,
+    /Starting minecraft server version\s+([^\s,;]+)/i,
+    /Launching Minecraft\s+([^\s,;]+)/i,
+    /for Minecraft\s+([^\s,;]+)/i,
+    /Minecraft\s+(?:Java Edition\s+)?([^\s,;]+)\s+with/i,
+    /Minecraft\s+(Beta|Alpha)\s+v?([\d][\w.-]*)/i,
+    /Minecraft\s+v?(\d+(?:\.\d+){1,3}[\w.-]*)/i
   ];
   for (const p of pats) {
     const m = text.match(p);
-    if (m) return m[1];
+    if (!m) continue;
+    if (m[2] && /^(Beta|Alpha)$/i.test(m[1])) return `${m[1]} ${m[2]}`;
+    const v = m[1];
+    if (/^(?:\d|Beta|Alpha)/i.test(v)) return v;
   }
   return null;
 }
@@ -938,19 +1289,39 @@ function detectGameVersion(text) {
 function detectLogEra(text, version) {
   // 有版本号优先用版本号判断，最可靠
   if (version) {
-    const clean = String(version).replace(/[^\d.].*$/, '');
-    if (/^\d/.test(clean)) {
-      return versionLessThan(clean, "1.13") ? "legacy" : "modern";
+    if (/^(Beta|Alpha)/i.test(String(version))) return "ancient";
+    const clean = normalizeVersion(version);
+    if (clean) {
+      if (versionLessThan(clean, "1.7")) return "ancient";
+      if (versionLessThan(clean, "1.13")) return "legacy";
+      return "modern";
     }
   }
   // 没有版本号就用格式特征
+  const ancientRe = /\[ForgeModLoader\]|\[ModLoader\]|\bmod_[a-zA-Z]|Loading mods|ModLoader\.java/i;
   const legacyRe = /\[Client thread\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|\[Server thread\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|\[Forge Mod Loader version|cpw\.mods\.fml|\[FML\]:\s/;
   const modernRe = /\[(?:main|Render thread|Worker[^\]]*)\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|--fml\.mcVersion/;
+  const ancient = ancientRe.test(text);
   const legacy = legacyRe.test(text);
   const modern = modernRe.test(text);
-  if (legacy && !modern) return "legacy";
-  if (modern && !legacy) return "modern";
+  if (modern) return "modern";
+  if (ancient) return "ancient";
+  if (legacy) return "legacy";
   return "unknown";
+}
+
+// 根据识别到的版本给出 Java 建议（1.7- / 1.7~1.16 / 1.17~1.20.4 / 1.20.5~1.21.x / 26.1+）
+function javaHintFor(version) {
+  if (!version) return null;
+  if (/^(Beta|Alpha)/i.test(String(version))) return "Java 6 / 7（现在的系统装 Java 8 也能兼容跑）";
+  if (isNewEraVersion(version)) return "Java 25";
+  const v = normalizeVersion(version);
+  if (!v) return null;
+  if (versionLessThan(v, "1.7")) return "Java 7（新系统可用 Java 8 兼容运行）";
+  if (versionLessThan(v, "1.17")) return "Java 8";
+  if (versionLessThan(v, "1.20.5")) return "Java 17";
+  if (versionLessThan(v, "26")) return "Java 21";
+  return "Java 25";
 }
 
 /* ============================================================
@@ -1046,14 +1417,20 @@ const DIAGNOSIS_RULES = [
     test: t => /UnsupportedClassVersionError|class file version|major version \d+/i.test(t),
     result: "Java 版本不匹配",
     comment: "用了不对的 Java 版本启动游戏，比如拿 Java 8 跑 1.17+。",
-    prescription: "1.17~1.20.4 用 Java 17，1.20.5+ 用 Java 21，老版本（≤1.16）用 Java 8。",
+    prescription: ctx => {
+      const hint = javaHintFor(ctx && ctx.version);
+      return hint
+        ? `这个版本请用 ${hint}；现在启动器里换个 Java 再来。`
+        : "1.7 之前用 Java 7/8，1.17~1.20.4 用 Java 17，1.20.5~1.21.x 用 Java 21，26.1+ 用 Java 25。";
+    },
     extra: t => {
       const m = t.match(/class file version (\d+)/i);
       if (!m) return [];
       const ver = Number(m[1]);
-      const map = {52:"Java 8", 53:"Java 9", 54:"Java 10", 55:"Java 11", 56:"Java 12",
-                   57:"Java 13", 58:"Java 14", 59:"Java 15", 60:"Java 16", 61:"Java 17",
-                   62:"Java 18", 63:"Java 19", 64:"Java 20", 65:"Java 21", 66:"Java 22"};
+      const map = {50:"Java 6", 51:"Java 7", 52:"Java 8", 53:"Java 9", 54:"Java 10", 55:"Java 11",
+                   56:"Java 12", 57:"Java 13", 58:"Java 14", 59:"Java 15", 60:"Java 16", 61:"Java 17",
+                   62:"Java 18", 63:"Java 19", 64:"Java 20", 65:"Java 21", 66:"Java 22", 67:"Java 23",
+                   68:"Java 24", 69:"Java 25", 70:"Java 26"};
       return [`📎 日志要求至少 ${map[ver] || ("Java " + ver)} 才能运行。`];
     }
   },
@@ -1228,12 +1605,143 @@ const DIAGNOSIS_RULES = [
 ];
 
 /* ============================================================
+ *  9.5 梗体诊断文案（开启「梗体诊断」后替换锐评 / 处方）
+ * ============================================================ */
+const MEME_DIAGNOSIS = {
+  permgen: {
+    result: "永久代溢出（上古时代的诅咒）",
+    comment: "Java 7 的 PermGen 被模组塞到爆仓，1.7.10 大型整合包的老传统艺能了，属于考古现场。",
+    prescription: "换 Java 8，PermGen 直接退休；实在不行先加 -XX:MaxPermSize=256m 续命。"
+  },
+  oom: {
+    result: "内存溢出（内存条当场裂开）",
+    comment: "你的 Java 堆已经撑到冒烟，4K 材质 + 光影 + 几百个模组，属于把内存条当许愿池用。",
+    prescription: "-Xmx 拉到 4G~8G；再不行就把 4K 材质和重光影请出去，别让内存条跪着上班。"
+  },
+  javaVersion: {
+    result: "Java 版本不对（穿错鞋了属于是）",
+    comment: "拿旧 Java 跑新游戏，或者反过来，CPU 看了都摇头：哥们你这鞋码不对啊。",
+    prescription: ctx => {
+      const hint = javaHintFor(ctx && ctx.version);
+      return hint
+        ? `这版本得穿 ${hint} 这双鞋，先去启动器里换好再启动，别硬塞。`
+        : "1.7 之前 Java 7/8，1.17~1.20.4 Java 17，1.20.5~1.21.x Java 21，26.1+ Java 25，对号入座。";
+    }
+  },
+  missingDependency: {
+    result: "缺前置（拼图少了一块）",
+    comment: "有模组在满世界喊「我爹呢」，前置没装齐，游戏直接罢工，属于开局就散伙。",
+    prescription: "按下面点名的模组去补前置，XXX-API / XXX-Lib 这类名字挨个找，装齐再启动。"
+  },
+  duplicateMod: {
+    result: "模组撞车（双胞胎打架）",
+    comment: "同一个模组装了两份，游戏：你让我听谁的？这属于家庭伦理剧。",
+    prescription: "去 mods 文件夹二选一，旧版本和重复的直接送走，别留备份在原地过年。"
+  },
+  zipCorrupt: {
+    result: "模组文件损坏（下到一半就跑了）",
+    comment: "jar 下了一半就断线，文件已经半身不遂，游戏当然加载不动。",
+    prescription: "重新下载报错的模组，对一下文件大小，别再让下载器偷懒。"
+  },
+  sideMismatch: {
+    result: "客户端/服务端串台（走错片场）",
+    comment: "客户端模组跑去服务端上班，服务端模组跑到客户端打卡，双向奔赴但都不对。",
+    prescription: "服务端删客户端专属，客户端删服务端专属，各回各家。"
+  },
+  missingJar: {
+    result: "核心 jar 缺失（地基没了）",
+    comment: "连 Minecraft 核心类都找不到，版本 jar 或 libraries 缺胳膊少腿，1.7.10 / 1.12.2 老玩家熟客了。",
+    prescription: "让启动器重新补全版本，顺手看看 versions/<版本>/<版本>.jar 还在不在。"
+  },
+  unsatisfiedLink: {
+    result: "本地库缺失（零件没到货）",
+    comment: "LWJGL 或系统运行库找不到，属于零件没到货就想开车。",
+    prescription: "重下版本；Windows 再装个 VC++ 运行库，别让系统背锅。"
+  },
+  opengl: {
+    result: "显卡 / OpenGL 罢工（显卡：我不干了）",
+    comment: "驱动太老或者显卡不支持这版 OpenGL，画面还没出来，显卡先提桶跑路。",
+    prescription: "更新显卡驱动；集显换独显，或者把光影和画质往下调，先让游戏跑起来。"
+  },
+  fabricEntry: {
+    result: "Fabric 入口点翻车（门都进不去）",
+    comment: "Fabric 模组初始化直接抛异常，属于还没进门就摔在门槛上。",
+    prescription: "更新 Fabric API 和报错里点名的模组，别让它们版本互相看不上。"
+  },
+  fmlLoaderException: {
+    result: "Forge / FML 加载翻车（旧时代の痛）",
+    comment: "1.13 之前的 Forge 加载模组时炸了，通常是某个模组先崩或者前置缺席。",
+    prescription: "在日志里搜 LoaderException 前后几行，把点名的模组删掉或更新。"
+  },
+  forgeLoad: {
+    result: "Forge 加载失败（启动器：寄）",
+    comment: "Forge 加载模组时直接躺平，大概率某模组不兼容或文件损坏。",
+    prescription: "看日志点名的模组，该删删该更更，别心软。"
+  },
+  mixin: {
+    result: "Mixin 注入失败（魔法反噬）",
+    comment: "模组想偷偷改原版代码，结果被原版当场抓获，版本不匹配实锤。",
+    prescription: "更新或降级报错模组，冲突的删一个，别让它们继续斗法。"
+  },
+  modConflict: {
+    result: "模组冲突（代码版宫斗）",
+    comment: "某模组调用不存在的方法 / 类，版本对不上，属于跨服聊天。",
+    prescription: "把最近加的模组请出去，或者整套模组统一版本，别混搭。"
+  },
+  verifyError: {
+    result: "字节码损坏（文件被啃了）",
+    comment: "jar 或字节码被破坏，文件像是被僵尸啃过一口。",
+    prescription: "重下报错的模组或游戏版本，别用来路不明的包。"
+  },
+  stackOverflow: {
+    result: "栈溢出（套娃套到天荒地老）",
+    comment: "死循环或递归太深，某模组写了个俄罗斯套娃，StackOverflow 直接登顶。",
+    prescription: "删最近加的模组，或者翻翻它的配置文件，别让它继续套。"
+  },
+  arrayBounds: {
+    result: "数组越界（脚踩出地图了）",
+    comment: "模组处理数组时一脚踩空，典型模组 Bug，属于程序员的锅。",
+    prescription: "更新到最新版，或者把最近加的模组请走。"
+  },
+  ticking: {
+    result: "游戏刻崩溃（世界在抽搐）",
+    comment: "更新实体 / 方块 / 界面时崩了，某个模组在 tick 里整活，世界当场抽搐。",
+    prescription: "看 Description 下面的实体 / 方块和模组，删掉或更新；区块里的问题实体可以用 NBTExplorer 移走。"
+  },
+  npe: {
+    result: "空指针（对着空气一顿操作）",
+    comment: "游戏用了个不存在的对象，常见于模组 Bug 或配置被改坏，属于虚空打靶。",
+    prescription: "还原最近改的配置，或者删掉最近加的模组，别让它在空气里找对象。"
+  },
+  jsonCorrupt: {
+    result: "JSON 损坏（配置文件语文没学好）",
+    comment: "配置文件 / 资源 JSON 格式坏了，少个逗号多个括号，游戏直接看不懂。",
+    prescription: "删掉 config 或 saves 里损坏的配置，游戏会自己重建，别手改。"
+  },
+  accessDenied: {
+    result: "权限不足（门卫不让进）",
+    comment: "游戏没权限读写文件，系统门卫把它拦在门外了。",
+    prescription: "把游戏挪到非系统目录（比如 D 盘），或者用管理员身份运行。"
+  },
+  network: {
+    result: "网络问题（网线在装死）",
+    comment: "连服务器或下资源失败，网络：不是我，是墙 / 路由 / 运营商。",
+    prescription: "查网络、换镜像源，必要时开代理，别跟网线硬碰硬。"
+  },
+  optifine: {
+    result: "OptiFine 相关（老演员了）",
+    comment: "OptiFine 兼容性老毛病，跟谁都能打一架，属于整合包界常驻反派。",
+    prescription: "试试 Iris + Sodium 平替，或者换个 OptiFine 版本，别死磕。"
+  }
+};
+
+/* ============================================================
  *  10. 核心诊断逻辑
  * ============================================================ */
 function runDiagnose() {
   const raw = logInput.value || "";
   if (!raw.trim()) {
-    out("日志是空的，老中医也没辙。", "warn");
+    out(memeMode ? "日志空得跟我的钱包一样，老中医再神也号不出脉。" : "日志是空的，老中医也没辙。", "warn");
     stats.emptyClickCount++;
     saveStats();
     if (stats.emptyClickCount >= 20) unlock("头铁之王");
@@ -1246,22 +1754,29 @@ function runDiagnose() {
   const d = new Date();
   if (d.getHours() === 4 && d.getMinutes() < 30) unlock("凌晨四点的洛杉矶");
 
-  const text = raw.slice(-MAX_LEN);
-  // 版本 / 年代检测：crash-report 与日志开头都可能带版本信息
-  const head = raw.slice(0, 8000);
-  const tail = raw.slice(-4000);
-  const combined = head + "\n" + tail;
-  const gameVer = detectGameVersion(combined);
-  const era = detectLogEra(combined, gameVer);
+  // v1.1：不再截取最后 5000 字符，整篇日志直接参与识别
+  const text = raw;
+  const gameVer = detectGameVersion(raw);
+  const era = detectLogEra(raw, gameVer);
+  const newEra = isNewEraVersion(gameVer);
 
-  out("──────── 开始诊断 ────────", "dim");
-  out(`原文 ${raw.length} 字符，截取最后 ${text.length} 字符。`, "dim");
-  if (gameVer) out(`📎 识别到游戏版本：${gameVer}`, "dim");
-  if (era === "legacy") {
+  out(memeMode ? "──────── 开始诊断（梗体模式）────────" : "──────── 开始诊断 ────────", "dim");
+  out(`原文 ${raw.length} 字符，已对整篇日志做识别（不再截断）。`, "dim");
+  if (memeMode) out("📎 梗体诊断已开启：锐评含梗量较高，但处方是真的。", "dim");
+  if (gameVer) out(`📎 识别到游戏版本：${gameVer}${newEra ? "（26.1+ 年度版本号）" : ""}`, "dim");
+  if (era === "ancient") {
+    out("📎 检测到 1.7 之前的远古日志（1.6.4 / Beta / Alpha），已启用考古级兼容解析。", "dim");
+    unlock("时光机修理工");
+  } else if (era === "legacy") {
     out("📎 检测到 1.13 之前的旧版日志格式（Client thread / FML），已启用兼容解析。", "dim");
     unlock("时光机修理工");
   } else if (era === "modern") {
-    out("📎 检测到 1.13+ 新版日志格式。", "dim");
+    out(newEra
+      ? "📎 检测到 26.1+ 新版年度版本日志格式，已启用新版解析。"
+      : "📎 检测到 1.13+ 新版日志格式。", "dim");
+  }
+  if (newEra) {
+    out("📎 提示：26.1 起官方不再混淆，1.21.11 及之前的模组需要重新编译，不能直接搬过来用。", "dim");
   }
 
   // 彩蛋：ProjectE 家族专属检测
@@ -1271,9 +1786,15 @@ function runDiagnose() {
   const looksLikeMissing = /Missing or unsupported mandatory dependencies|Missing dependency|Missing mods|Missing mod|Mod .* requires|requires .* but it is not installed|A dependency of .* is missing/i.test(text);
 
   if (hasProjectEX && !hasProjectE && looksLikeMissing) {
-    out("【诊断结果】缺胳膊少腿（ProjectE 家族）", "err");
-    out("【锐评】装了 ProjectEX 居然不装祖宗 ProjectE？这属于忘本。", "warn");
-    out("【处方】赶紧去 CurseForge / MCBBS 下个 ProjectE，版本要和 ProjectEX 对得上。", "ok");
+    if (memeMode) {
+      out("【诊断结果】缺胳膊少腿（ProjectE 家族·忘本现场）", "err");
+      out("【锐评】装了 ProjectEX 不装 ProjectE，属于认贼作父、数典忘祖，ProjectE 本人连夜买站票走了。", "warn");
+      out("【处方】去 CurseForge / MCBBS 下个 ProjectE，版本跟 ProjectEX 对上，把祖宗请回来。", "ok");
+    } else {
+      out("【诊断结果】缺胳膊少腿（ProjectE 家族）", "err");
+      out("【锐评】装了 ProjectEX 居然不装祖宗 ProjectE？这属于忘本。", "warn");
+      out("【处方】赶紧去 CurseForge / MCBBS 下个 ProjectE，版本要和 ProjectEX 对得上。", "ok");
+    }
     stats.missingCount++; saveStats();
     if (stats.missingCount >= 10) unlock("缝合怪大圆满");
     countDiagnose();
@@ -1284,9 +1805,15 @@ function runDiagnose() {
   for (const rule of DIAGNOSIS_RULES) {
     if (!rule.test(text)) continue;
 
-    out(`【诊断结果】${rule.result}`, "err");
-    out(`【锐评】${rule.comment}`, "warn");
-    out(`【处方】${rule.prescription}`, "ok");
+    const meme = memeMode ? MEME_DIAGNOSIS[rule.id] : null;
+    const resultText = (meme && meme.result) || rule.result;
+    const commentText = (meme && meme.comment) || rule.comment;
+    let pres = meme ? (meme.prescription || rule.prescription) : rule.prescription;
+    const presText = typeof pres === "function" ? pres({ version: gameVer, era }) : pres;
+
+    out(`【诊断结果】${resultText}`, "err");
+    out(`【锐评】${commentText}`, "warn");
+    out(`【处方】${presText}`, "ok");
 
     if (typeof rule.extra === "function") {
       rule.extra(text).forEach(e => out(e, "dim"));
@@ -1301,6 +1828,7 @@ function runDiagnose() {
         unlock(rule.achievement);
       }
     }
+    if (memeMode) out("（以上锐评含梗量偏高，处方照着做就行，别光顾着笑。）", "dim");
     countDiagnose();
     return;
   }
@@ -1309,11 +1837,17 @@ function runDiagnose() {
   stats.unknownCount++;
   saveStats();
   if (stats.unknownCount < 3) {
-    out(`未知错误，是否装了外星人模组？(当前进度 ${stats.unknownCount}/3)`, "warn");
-    out("（如果多次命中未知，建议把 crash-report 最后 200 行发到模组群 / MCBBS 求助）", "dim");
+    out(memeMode
+      ? `未知错误，鉴定为外星模组在搞事（当前进度 ${stats.unknownCount}/3）。`
+      : `未知错误，是否装了外星人模组？(当前进度 ${stats.unknownCount}/3)`, "warn");
+    out(memeMode
+      ? "（真没辙就把 crash-report 最后 200 行发群里，让大佬们一起参悟。）"
+      : "（如果多次命中未知，建议把 crash-report 最后 200 行发到模组群 / MCBBS 求助）", "dim");
   } else {
     stats.unknownCount = 0; saveStats();
-    out("触发隐藏成就【百毒不侵】！把日志发到评论区让UP主头秃！", "gold");
+    out(memeMode
+      ? "触发隐藏成就【百毒不侵】！这日志的含毒量已经能开药铺了，快发给 UP 主让他头秃！"
+      : "触发隐藏成就【百毒不侵】！把日志发到评论区让UP主头秃！", "gold");
     unlock("百毒不侵");
   }
   countDiagnose();
@@ -1324,6 +1858,10 @@ function countDiagnose() {
   stats.diagnoseCount = (stats.diagnoseCount || 0) + 1;
   saveStats();
   if (stats.diagnoseCount >= 50) unlock("见多识广");
+
+  // 周末战神：周六 / 周日成功诊断
+  const day = new Date().getDay();
+  if (day === 0 || day === 6) unlock("周末战神");
 
   // 新手引导：前几次诊断后给一条提示
   if (stats.diagnoseCount === 1) {
@@ -1406,7 +1944,7 @@ function aboutNormal() {
 
   modal({
     title: "关于开发者",
-    html: '<p>本软件由 <span class="dev-name" id="devName">@某位不愿透露姓名的UP主</span> 用爱发电开发。</p><p class="dim">v1.0 · 纯本地运行</p>',
+    html: '<p>本软件由 <span class="dev-name" id="devName">@某位不愿透露姓名的UP主</span> 用爱发电开发。</p><p class="dim">v1.1 · 纯本地运行</p>',
     buttons: [{ text: "关闭", value: false }],
     onMount(box, overlay) {
       timer = setTimeout(() => { if (!isInterrupted) unlock("白嫖的终点"); }, 60000);
@@ -1424,10 +1962,40 @@ function aboutNormal() {
 }
 
 async function aboutChain() {
-  await modal({ title: "开发者", html: "<p>给我投个币可以吗？球球啦……</p>" });
-  await modal({ title: "开发者", html: "<p>真的不答应投吗……</p>" });
-  await modal({ title: "开发者", html: "<p>你真是个傲娇鬼……哼，好吧，我也管不到你QAQ！</p>" });
-  await modal({ title: "开发者", html: "<p>反正不是我……</p>" });
+  const choice = await modal({
+    title: "开发者",
+    html: "<p>给我投个币可以吗？球球啦……</p>",
+    buttons: [{ text: "好吧", value: "ok" }, { text: "下次一定", value: "next" }]
+  });
+
+  // 投币线：开心收场，达成成就
+  if (choice === "ok") {
+    unlock("投币之恩");
+    await modal({
+      title: "开发者",
+      html: '<p>谢谢支持！</p><p class="dim">硬币已收到，开发者的嘴角比红石信号还亮。</p><p class="gold">🏆 达成成就【投币之恩】</p>',
+      buttons: [{ text: "不客气", value: true }]
+    });
+    return;
+  }
+
+  // 下次一定线：嘴硬三连，最后把开发者气哭
+  await modal({
+    title: "开发者",
+    html: "<p>……真的不给吗？</p>",
+    buttons: [{ text: "好吧……", value: true }]
+  });
+  await modal({
+    title: "开发者",
+    html: "<p>好好好，原来你还是个傲娇。</p>",
+    buttons: [{ text: "你也没给我选择啊😡😡😡", value: true }]
+  });
+  unlock("下次一定");
+  await modal({
+    title: "开发者",
+    html: "<p>呜呜呜，你凶我！</p>",
+    buttons: [{ text: "（关掉弹窗）", value: true }]
+  });
   crash();
 }
 
@@ -1473,8 +2041,8 @@ versionEl.addEventListener("click", () => {
   const n = vClickTimes.length;
 
   if (n === 1) out("喵？", "dim");
-  else if (n === 3) setVersion("v1.0 (你烦不烦啊？)");
-  else if (n === 10) setVersion("v1.0 (别点了！！)", "warn");
+  else if (n === 3) setVersion("v1.1 (你烦不烦啊？)");
+  else if (n === 10) setVersion("v1.1 (别点了！！)", "warn");
   else if (n >= 15) triggerDevil();
 });
 
@@ -1482,7 +2050,7 @@ function triggerDevil() {
   stats.vAngry = true;
   vClickTimes = [];
   window.open("https://b23.tv/wBpoyKl", "_blank");
-  setVersion('v1.0 🐶', "devil");
+  setVersion('v1.1 🐶', "devil");
   out("版本号大人被你激怒了！！！", "err");
   out("（提示：也许该右键点一下那只狗头？）", "dim");
 }
@@ -1495,7 +2063,7 @@ versionEl.addEventListener("contextmenu", async e => {
 
   if (v.trim().toUpperCase() === "GUN") {
     stats.vAngry = false;
-    setVersion("v1.0");
+    setVersion("v1.1");
     out("版本号大魔王骂骂咧咧地 GUN 了。", "gold");
     unlock("大魔王的屈服");
   } else {
@@ -1509,17 +2077,48 @@ versionEl.addEventListener("contextmenu", async e => {
 $("btnViewAch").addEventListener("click", () => { renderAchievements(); showView("viewAch"); });
 $("btnBackMain").addEventListener("click", () => showView("viewMain"));
 $("btnViewDl").addEventListener("click", () => showView("viewDownloader"));
+$("btnPersonalize").addEventListener("click", openPersonalize);
+
+// 一键清零所有成就（含成就进度计数）
+$("btnResetAch").addEventListener("click", async () => {
+  const ok = await modal({
+    title: "🗑️ 清零所有成就",
+    html: '<p class="err">确定要清零吗，无法恢复！</p>',
+    buttons: [{ text: "取消", value: false }, { text: "确定", value: true }]
+  });
+  if (!ok) return;
+
+  stats.achievements = [];
+  stats.oomCount = 0;
+  stats.missingCount = 0;
+  stats.emptyClickCount = 0;
+  stats.unknownCount = 0;
+  stats.playTime = 0;
+  stats.linkCopyCount = 0;
+  stats.guardBlockCount = 0;
+  stats.mirrorUsed = [];
+  stats.diagnoseCount = 0;
+  stats.typedChars = 0;
+  stats.opCount = 0;
+  stats.themeSwitchCount = 0;
+  saveStats();
+  renderAchievements();
+  out("🗑️ 所有成就已清零，成就进度也一起归零了。", "warn");
+});
 
 /* ============================================================
  *  15. 启动初始化
  * ============================================================ */
 (function init() {
+  // 主题：先应用，避免闪一下默认色
+  applyTheme(currentThemeId, currentAccent);
+
   if (localStorage.getItem("mcFixer.log")) logInput.value = localStorage.getItem("mcFixer.log");
   if (localStorage.getItem("mcFixer.output")) outputEl.innerHTML = localStorage.getItem("mcFixer.output");
   lastLogLen = logInput.value.length;
 
   if (stats.vAngry) {
-    versionEl.innerHTML = 'v1.0 🐶';
+    versionEl.innerHTML = 'v1.1 🐶';
     versionEl.classList.add("devil");
   }
 
@@ -1532,11 +2131,15 @@ $("btnViewDl").addEventListener("click", () => showView("viewDownloader"));
   const h = new Date().getHours();
   if (h >= 0 && h < 5) unlock("夜猫子");
 
+  // 早八人：6:00 ~ 8:00 打开工具
+  if (h >= 6 && h < 8) unlock("早八人");
+
   if (!outputEl.innerHTML.trim()) {
-    out("MC 赛博急救与空投系统 v1.0 已启动。", "ok");
+    out("MC 赛博急救与空投系统 v1.1 已启动。", "ok");
     out("💡 第一步：把 crash-report / latest.log 粘贴到左上输入框，或点「📁 读取文件」。", "dim");
-    out("💡 第二步：点「⚡ 开始诊断」，右侧会给出锐评和处方。", "dim");
-    out("💡 支持 1.7.10 ~ 1.21 各版本日志，新旧格式自动识别。", "dim");
+    out("💡 第二步：点「⚡ 开始诊断」，右侧会给出锐评和处方（整篇日志都会识别，不截断）。", "dim");
+    out("💡 支持 1.6.4 / Beta / Alpha ~ 26.1+ 各版本日志，新旧格式自动识别。", "dim");
+    out("💡 右上角新增「🎛️ 个性化」：可换主题色、开梗体诊断。", "dim");
     out("💡 新手建议先点右上角「❓ 使用指南」。", "dim");
   } else {
     out("【系统】已恢复上次的工作进度。", "dim");
