@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>MC 赛博急救与空投系统 v1.1</title>
+<title>MC 赛博急救与空投系统 v1.2</title>
 <style>
   /* ============================================================
    *  通用变量（主题换色就是改这一层变量）
@@ -102,6 +102,14 @@
   .ts { color: #333b45; }
   .ok { color: var(--green); } .err { color: var(--red); } .warn { color: var(--yellow); }
   .dim { color: var(--dim); } .gold { color: var(--gold); text-shadow: 0 0 8px rgba(255,182,72,.5); }
+
+  /* ================= v1.2 终端小工具 ================= */
+  .panel-title-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; flex-wrap: wrap; flex: none;
+  }
+  .out-tools { display: flex; align-items: center; gap: 6px; }
+  .mini-btn { padding: 2px 8px; font-size: 11px; line-height: 1.5; border-radius: 3px; }
 
   /* ================= 成就殿堂界面 ================= */
   .ach-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; }
@@ -368,6 +376,43 @@
     line-height: 1.6; margin: 10px 0;
   }
   #viewDownloader .folder-struct .highlight { color: var(--gold); font-weight: bold; }
+  #viewDownloader .modal-body .table-wrap { overflow-x: auto; margin: 10px 0; -webkit-overflow-scrolling: touch; }
+  #viewDownloader .modal-body table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  #viewDownloader .modal-body th,
+  #viewDownloader .modal-body td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+  #viewDownloader .modal-body th { background: var(--panel-2); color: var(--cyan); font-weight: 600; white-space: nowrap; }
+  #viewDownloader .modal-body td code { overflow-wrap: anywhere; }
+
+  /* ================= 模组加载器官方源 ================= */
+  #viewDownloader .loader-panel { flex: none; }
+  #viewDownloader .loader-grid {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
+  }
+  #viewDownloader .loader-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 8px 10px; min-width: 0;
+  }
+  #viewDownloader .loader-text { min-width: 0; }
+  #viewDownloader .loader-name { display: block; color: var(--cyan); font-weight: bold; font-size: 13px; }
+  #viewDownloader .loader-desc { display: block; color: var(--dim); font-size: 11px; line-height: 1.4; }
+  #viewDownloader .loader-link {
+    flex: none; display: inline-flex; align-items: center; gap: 3px; min-height: 30px;
+    padding: 0 10px; border: 1px solid var(--border-hi); border-radius: 4px;
+    color: var(--green); font-size: 12px; text-decoration: none; white-space: nowrap;
+    transition: all .12s;
+  }
+  #viewDownloader .loader-links { flex: none; display: flex; align-items: center; gap: 6px; }
+  #viewDownloader .loader-link.secondary { color: var(--dim); border-color: var(--border); padding: 0 8px; font-size: 11px; }
+  #viewDownloader .loader-link:hover { background: #1d2530; color: #fff; border-color: var(--green); }
+  #viewDownloader .loader-note { color: var(--dim); font-size: 11px; line-height: 1.55; }
+  #viewDownloader .loader-note code { background: #000; color: var(--gold); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+  @media (max-width: 1150px) {
+    #viewDownloader .loader-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    #viewDownloader .loader-grid { grid-template-columns: 1fr; }
+  }
 
   /* ================= 响应式 ================= */
   @media (max-width: 900px) {
@@ -383,6 +428,17 @@
     .head-right { gap: 6px; }
     .head-right button, #btnAbout { min-height: 40px; }
     header { gap: 6px; }
+
+    /* v1.2：手机上把「开始诊断」固定到底部，不用滚两屏去找。
+       只改定位，不覆盖 background / color / border —— 颜色继续走 button 的主题变量 */
+    #viewMain main { padding-bottom: 78px; }
+    #viewMain #btnDiagnose {
+      position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      transform: translateX(-50%); z-index: 60; min-width: 210px;
+      padding: 12px 22px; font-size: 13px;
+    }
+    #viewMain #btnDiagnose:active { transform: translateX(-50%) translateY(1px); }
+    .out-tools .mini-btn { min-height: 34px; padding: 4px 10px; }
   }
 
   @media (max-width: 850px) {
@@ -413,7 +469,7 @@
       <button id="btnViewDl">📥 下载助手</button>
       <button id="btnViewAch">🏆 成就殿堂</button>
       <button id="btnPersonalize">🎛️ 个性化</button>
-      <div id="version" class="version">v1.1</div>
+      <div id="version" class="version">v1.2</div>
     </div>
   </header>
 
@@ -431,7 +487,13 @@
     </section>
 
     <section class="panel">
-      <div class="panel-title">// 终端输出 / TERMINAL</div>
+      <div class="panel-title panel-title-row">
+        <span>// 终端输出 / TERMINAL</span>
+        <span class="out-tools">
+          <button id="btnCopyCard" class="mini-btn" title="把病历卡复制成 Markdown，方便发群">📋 复制病历卡</button>
+          <button id="btnClearLocal" class="mini-btn" title="删除浏览器里保存的日志和终端记录">🧹 清本地</button>
+        </span>
+      </div>
       <div id="output" class="output"></div>
     </section>
   </main>
@@ -506,9 +568,37 @@
           <div class="empty-hint">
             <div style="font-size:24px;">📋</div>
             <div>请在左侧选择版本</div>
-            <div style="font-size:12px; margin-top:8px; color:var(--dim);">如果你是新手，强烈建议先点击右上角的【导入教程】！</div>
+            <div style="font-size:12px; margin-top:8px; color:var(--dim);">如果你是新手，强烈建议先点击右上角的【导入教程】！<br>要装模组加载器？先看下面的「4. 模组加载器官方源」。</div>
           </div>
         </div>
+      </section>
+
+      <section class="panel loader-panel">
+        <div class="panel-title">// 4. 模组加载器官方源 / MOD LOADERS</div>
+        <div class="loader-grid">
+          <div class="loader-item">
+            <div class="loader-text">
+              <span class="loader-name">Forge</span>
+              <span class="loader-desc">老牌加载器，1.12.2 / 1.20.1 整合包首选</span>
+            </div>
+            <a class="loader-link" href="https://files.minecraftforge.net/net/minecraftforge/forge/" target="_blank" rel="noopener noreferrer">官网 ↗</a>
+          </div>
+          <div class="loader-item">
+            <div class="loader-text">
+              <span class="loader-name">Fabric</span>
+              <span class="loader-desc">轻量、更新快，模组生态大</span>
+            </div>
+            <a class="loader-link" href="https://fabricmc.net/use/installer/" target="_blank" rel="noopener noreferrer">官网 ↗</a>
+          </div>
+          <div class="loader-item">
+            <div class="loader-text">
+              <span class="loader-name">Quilt</span>
+              <span class="loader-desc">Fabric 分支，多数 Fabric 模组可用</span>
+            </div>
+            <a class="loader-link" href="https://quiltmc.org/en/install/" target="_blank" rel="noopener noreferrer">官网 ↗</a>
+          </div>
+        </div>
+        <div class="loader-note">装法：三个加载器下到的<strong>都是安装器</strong>，双击 → Install client → 选 <code>.minecraft</code>，装完自动生成 <code>versions/&lt;版本名&gt;/</code>；只有自己下 JSON 补全时才需要手动建文件夹改名（命名格式见右上角【导入教程】第四步）。NeoForge 1.2 先不放。</div>
       </section>
 
       <section class="panel terminal-panel">
@@ -527,7 +617,7 @@
   <div class="modal-overlay" id="dlTutorialModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>📖 新手保姆级导入教程</h2>
+        <h2>📖 新手保姆级导入 + 装模组教程</h2>
         <button class="btn-close" id="dlBtnCloseTutorial">×</button>
       </div>
       <div class="modal-body">
@@ -568,6 +658,38 @@
         <div class="warn-box">
           ⚠️ 警告：手动放依赖库极度容易放错位置导致游戏崩溃。强烈建议使用“第三步”的 PCL2 补全功能，那才是这个工具的真正玩法！
         </div>
+
+        <h3>第四步：装模组加载器（想玩模组才需要）</h3>
+        <p>原版装好后，在下载助手里找到 <strong>「4. 模组加载器官方源」</strong>，点开你要的加载器下载<strong>安装器</strong>，双击运行 → 选 Install client → 目录选 <code>.minecraft</code>，装完 PCL2 版本列表里就多一个，直接启动、缺库让它补全。三个加载器都是安装器，不用手动放文件。</p>
+        <p class="dim" style="font-size:12px;">下面这张表是给「自己下 JSON 补全」的人看的：只有手动下版本 JSON 时，才需要按这个格式建文件夹。</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>加载器</th><th>版本名 / 文件名格式</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>原版</td><td><code>&lt;游戏版本&gt;</code><br><span class="dim">例：1.20.1</span></td></tr>
+              <tr><td>Forge</td><td><code>&lt;游戏版本&gt;-forge-&lt;Forge 版本&gt;</code><br><span class="dim">例：1.20.1-forge-47.4.0</span></td></tr>
+              <tr><td>Fabric</td><td><code>fabric-loader-&lt;加载器版本&gt;-&lt;游戏版本&gt;</code><br><span class="dim">例：fabric-loader-0.16.5-1.20.1</span></td></tr>
+              <tr><td>Quilt</td><td><code>quilt-loader-&lt;加载器版本&gt;-&lt;游戏版本&gt;</code><br><span class="dim">例：quilt-loader-0.27.1-1.20.1</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>手动放的话，文件夹名和里面的 <code>.json</code>、<code>.jar</code> 必须<strong>完全一致</strong>。以 1.20.1 的 Forge 为例：</p>
+        <div class="folder-struct">
+          .minecraft/versions/<span class="highlight">1.20.1-forge-47.4.0/</span><br>
+          ├── <span class="highlight">1.20.1-forge-47.4.0.json</span><br>
+          └── <span class="highlight">1.20.1-forge-47.4.0.jar</span>
+        </div>
+        <p>放好后打开 PCL2，版本列表里就会出现它，直接启动，缺依赖库时让 PCL2 补全。</p>
+
+        <div class="tip-box">
+          💡 三个加载器官方给的都是<strong>安装器</strong>：Forge 是 <code>…-installer.jar</code>，Fabric 是 <code>fabric-installer-&lt;版本&gt;.jar</code>，Quilt 是 <code>quilt-installer-&lt;版本&gt;.jar</code>。双击 → 选 Install client → 目录选 <code>.minecraft</code>，装完会自动在 <code>versions/</code> 里生成上面这种文件夹，不用手动改名；双击没反应就是没装 Java，用 PCL2「设置 → 启动器 → Java 路径」里的 <code>java.exe</code> 运行。
+        </div>
+        <p class="dim" style="font-size:12px;">NeoForge 这次先不放：官方站打不开，BMCLAPI 的版本接口也报 Not Found，等入口稳定了再加回来。</p>
+        <p>装完加载器，把模组 <code>.jar</code> 丢进 <code>.minecraft/mods/</code> 就能用了。Fabric / Quilt 记得再装一个 <strong>Fabric API</strong>；Forge / Fabric / Quilt 的模组不能混装，认准模组页面上写的加载器。</p>
       </div>
     </div>
   </div>
@@ -583,6 +705,15 @@
  * ============================================================ */
 const $ = id => document.getElementById(id);
 const logInput = $("logInput"), outputEl = $("output"), versionEl = $("version");
+
+const APP_VERSION = "1.2";
+const SEEN_VERSION_KEY = "mcFixer.seenVersion";
+const STORAGE_OFF_KEY = "mcFixer.storageOff";
+const LOG_STORE_LIMIT = 600000;      // 超过这个长度就不写 localStorage，避免撑爆
+const OUTPUT_STORE_LIMIT = 200000;
+let lastCardMarkdown = "";
+let storageOff = false;
+try { storageOff = localStorage.getItem(STORAGE_OFF_KEY) === "1"; } catch (e) {}
 
 // 用 Object.assign 兜底老存档：老存档没有的新字段会保留默认值
 const DEFAULT_STATS = {
@@ -605,12 +736,32 @@ const DEFAULT_STATS = {
   onboarded: false      // 是否看过新手引导
 };
 // 注意：必须新建对象，不能污染 DEFAULT_STATS 默认值
-let stats = Object.assign({}, DEFAULT_STATS, JSON.parse(localStorage.getItem('mcFixerStats')) || {});
+let savedStats = {};
+try { savedStats = JSON.parse(localStorage.getItem('mcFixerStats')) || {}; } catch (e) { savedStats = {}; }
+let stats = Object.assign({}, DEFAULT_STATS, savedStats);
 
-function saveStats() { localStorage.setItem('mcFixerStats', JSON.stringify(stats)); }
+function saveStats() {
+  try { localStorage.setItem('mcFixerStats', JSON.stringify(stats)); } catch (e) {}
+}
 function saveState() {
-  localStorage.setItem("mcFixer.log", logInput.value);
-  localStorage.setItem("mcFixer.output", outputEl.innerHTML);
+  // v1.2：大日志不再硬塞 localStorage；也允许用户在个性化里彻底关闭自动保存
+  if (!storageOff) {
+    try {
+      const log = logInput.value;
+      if (log.length <= LOG_STORE_LIMIT) localStorage.setItem("mcFixer.log", log);
+      else localStorage.removeItem("mcFixer.log");
+
+      const html = outputEl.innerHTML;
+      if (html.length <= OUTPUT_STORE_LIMIT) localStorage.setItem("mcFixer.output", html);
+      else localStorage.removeItem("mcFixer.output");
+    } catch (e) {
+      // 配额满了：宁可丢缓存，也不能让页面在关闭时抛异常
+      try {
+        localStorage.removeItem("mcFixer.log");
+        localStorage.removeItem("mcFixer.output");
+      } catch (_) {}
+    }
+  }
   saveStats();
 }
 window.addEventListener("beforeunload", saveState);
@@ -1036,11 +1187,31 @@ function openPersonalize() {
         <span><span class="pers-name">梗体诊断</span><span class="pers-desc">让诊断锐评变成互联网浓度超标版</span></span>
         <span class="pers-state">${memeMode ? "已开启" : "已关闭"}</span>
       </button>
+      <button class="pers-item" id="persStorage">
+        <span class="pers-ico">💾</span>
+        <span><span class="pers-name">本地自动保存</span><span class="pers-desc">关闭后，日志和终端记录不再写进浏览器</span></span>
+        <span class="pers-state" id="persStorageState">${storageOff ? "已关闭" : "已开启"}</span>
+      </button>
     `,
     buttons: [{ text: "关闭", value: null }],
     onMount(box, overlay) {
       box.querySelector("#persTheme").addEventListener("click", () => { overlay.remove(); openThemePicker(); });
       box.querySelector("#persMeme").addEventListener("click", () => { overlay.remove(); openMemeDialog(); });
+      box.querySelector("#persStorage").addEventListener("click", () => {
+        storageOff = !storageOff;
+        try { localStorage.setItem(STORAGE_OFF_KEY, storageOff ? "1" : "0"); } catch (e) {}
+        if (storageOff) {
+          try {
+            localStorage.removeItem("mcFixer.log");
+            localStorage.removeItem("mcFixer.output");
+          } catch (e) {}
+        }
+        const stateEl = box.querySelector("#persStorageState");
+        if (stateEl) stateEl.textContent = storageOff ? "已关闭" : "已开启";
+        out(storageOff
+          ? "💾 已关闭本地自动保存：日志不再写入浏览器，刷新后不会恢复。"
+          : "💾 已开启本地自动保存：下次打开会恢复上次的日志和终端。", "dim");
+      });
     }
   });
 }
@@ -1148,37 +1319,96 @@ function openGuide(isFirstTime) {
       <h4>🚑 三步急救</h4>
       <ol>
         <li>崩溃后，去 <code>.minecraft/crash-reports/</code> 找最新的 <code>.txt</code>；没有就去 <code>.minecraft/logs/latest.log</code></li>
-        <li>把内容粘贴到左侧输入框，或点「📁 读取文件」</li>
-        <li>点「⚡ 开始诊断」，右侧终端会给出<strong>锐评</strong>和<strong>处方</strong></li>
+        <li>把内容粘贴到左边输入框，或点「📁 读取文件」</li>
+        <li>点「⚡ 开始诊断」，右边的终端（手机上是下方）会给出<strong>主因 / 次因</strong>和对应的处方</li>
       </ol>
+      <p class="dim" style="font-size:12px;">小技巧：按 <code>Ctrl + Enter</code> 也能直接开始诊断。</p>
     </div>
 
     <div class="guide-box gold">
+      <h4>🆕 v1.2 能多做什么</h4>
+      <ul>
+        <li><strong>多病因</strong>：一次列出主因和次因，告诉你先修哪个</li>
+        <li><strong>可疑模组</strong>：从崩溃堆栈里点名“哪个模组嫌疑最大”</li>
+        <li><strong>病历卡</strong>：版本 / Java / 内存 / 模组数一屏看完，可一键复制发群</li>
+      </ul>
+    </div>
+
+    <div class="guide-box">
       <h4>🕰️ 旧版日志兼容</h4>
-      <p>自动识别 <strong>1.13 之前</strong>（1.7.10 / 1.12.2 等）的旧版日志格式，<code>[Client thread/INFO]</code>、<code>[FML]</code>、<code>Missing mods: [...]</code> 这些老古董也能看懂；连 <strong>1.6.4 / Beta / Alpha</strong> 的远古日志、以及 <strong>26.1+</strong> 的年度版本号（如 <code>26.1</code>、<code>25.4-snapshot-1</code>）也能识别。</p>
-      <p class="dim" style="font-size:12px;">Java 对照：1.6.4 及更早 → Java 7，1.7~1.16 → Java 8，1.17~1.20.4 → Java 17，1.20.5~1.21.x → Java 21，26.1+ → Java 25。另外 26.1 起官方不再混淆，1.21.11 及之前的模组需要重新编译才能用。</p>
+      <p>自动识别 <strong>1.13 之前</strong>（1.7.10 / 1.12.2 等）的旧版日志格式，<code>[Client thread/INFO]</code>、<code>[FML]</code>、<code>Missing mods: [...]</code> 这些老古董也能看懂；连 <strong>1.6.4 / Beta / Alpha</strong> 的远古日志、以及 <strong>26.1+</strong> 的年度版本号也能识别。</p>
+      <p class="dim" style="font-size:12px;">Java 对照：1.6.4 及更早 → Java 7，1.7~1.16 → Java 8，1.17~1.20.4 → Java 17，1.20.5~1.21.x → Java 21，26.1+ → Java 25。26.1 起官方不再混淆，1.21.11 及之前的模组需要重新编译。</p>
     </div>
 
     <div class="guide-box">
       <h4>✨ 还有什么</h4>
       <ul>
         <li>🏆 <strong>成就殿堂</strong>：35 个成就等你解锁，很多很搞，纯本地可完成</li>
-        <li>📥 <strong>下载助手</strong>：PCL2 下架下载功能后的补全辅助，离线解析</li>
-        <li>🎛️ <strong>个性化</strong>：换主题颜色、开「梗体诊断」，让锐评更上头</li>
+        <li>📥 <strong>下载助手</strong>：PCL2 下架下载功能后的补全辅助，离线解析；附带 Forge / Fabric / Quilt 官方源</li>
+        <li>🎛️ <strong>个性化</strong>：换主题、开「梗体诊断」、关闭本地自动保存</li>
         <li>🐶 <strong>版本号</strong>：点它会……算了，你自己试</li>
       </ul>
     </div>
 
+    <p style="margin-top:10px;"><button class="mini-btn" id="guideUpdateBtn">📣 看看 1.2 更新了什么</button></p>
     <p class="dim" style="font-size:12px; margin-top:10px;">${isFirstTime ? "本提示只出现一次，之后可在顶部「❓ 使用指南」重新查看。" : "看完就关吧，日志还等着你修呢。"}</p>
   `;
   modal({
-    title: "👋 使用指南 · MC 赛博急救与空投系统 v1.1",
+    title: `👋 使用指南 · MC 赛博急救与空投系统 v${APP_VERSION}`,
     html,
-    buttons: [{ text: isFirstTime ? "开始使用" : "关闭", value: true }]
+    buttons: [{ text: isFirstTime ? "开始使用" : "关闭", value: true }],
+    onMount(box, overlay) {
+      const btn = box.querySelector("#guideUpdateBtn");
+      if (btn) btn.addEventListener("click", () => {
+        stats.onboarded = true;
+        saveStats();
+        overlay.remove();
+        openUpdateIntro(false);
+      });
+    }
   }).then(() => {
     if (isFirstTime) { stats.onboarded = true; saveStats(); }
   });
 }
+
+function openUpdateIntro(showGuideAfter) {
+  const html = `
+    <p style="margin-top:0;">一句话：<strong>以前像医生只说“你有病”，现在会说“你感冒了，还缺维生素”。</strong></p>
+
+    <div class="guide-box">
+      <h4>1. 一次能查出多个毛病</h4>
+      <p>以前只报第一个问题，修完可能还崩。现在分<strong>主因 / 次因</strong>，并按把握大小标“置信度”，告诉你先修哪个。</p>
+    </div>
+
+    <div class="guide-box">
+      <h4>2. 直接点名“可疑模组”</h4>
+      <p>崩溃堆栈里出现 <code>com.simibubi.create</code>，就会提示“Create 嫌疑最大”，不用自己一行行翻英文。</p>
+    </div>
+
+    <div class="guide-box gold">
+      <h4>3. 新增“病历卡”</h4>
+      <p>游戏版本、Java、内存、模组数、病因，一屏看完。点终端右上角的<strong>📋 复制病历卡</strong>，可以直接发群里求助。</p>
+    </div>
+
+    <div class="guide-box">
+      <h4>4. 多认了几种常见病</h4>
+      <p>Fabric 依赖对不上、NeoForge 加载失败、32 位 Java 内存上限、光影 / 资源包报错、只有退出代码没有日志的闪退……现在都能说个大概。</p>
+    </div>
+
+    <p class="dim" style="font-size:12px;">另外：大日志不会再撑爆浏览器缓存；<code>Ctrl + Enter</code> 直接诊断；手机上「开始诊断」固定在底部。老用户的主题、成就、日志都还在，不用重新设置。</p>
+    <p class="dim" style="font-size:12px;">看不懂名词没关系，照着「处方」做就行。诊断结果只是参考，拿不准就把病历卡发群，让大佬一起看。</p>
+  `;
+  modal({
+    title: `🆕 v${APP_VERSION} 更新了什么？`,
+    html,
+    buttons: [{ text: "知道了，开始用", value: true }]
+  }).then(() => {
+    try { localStorage.setItem(SEEN_VERSION_KEY, APP_VERSION); } catch (e) {}
+    if (showGuideAfter && !stats.onboarded) setTimeout(() => openGuide(true), 150);
+  });
+}
+
+
 
 $("btnGuide").addEventListener("click", () => openGuide(false));
 
@@ -1207,6 +1437,7 @@ document.addEventListener('click', e => {
 // 键盘粉碎者：统计非粘贴输入
 let lastLogLen = 0;
 logInput.addEventListener('input', (e) => {
+  lastCardMarkdown = "";
   const len = logInput.value.length;
   const delta = len - lastLogLen;
   lastLogLen = len;
@@ -1298,9 +1529,9 @@ function detectLogEra(text, version) {
     }
   }
   // 没有版本号就用格式特征
-  const ancientRe = /\[ForgeModLoader\]|\[ModLoader\]|\bmod_[a-zA-Z]|Loading mods|ModLoader\.java/i;
+  const ancientRe = /\[ForgeModLoader\]|\[ModLoader\]|\bmod_[a-zA-Z]/i;
   const legacyRe = /\[Client thread\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|\[Server thread\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|\[Forge Mod Loader version|cpw\.mods\.fml|\[FML\]:\s/;
-  const modernRe = /\[(?:main|Render thread|Worker[^\]]*)\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|--fml\.mcVersion/;
+  const modernRe = /\[(?:main|Render thread|Worker[^\]]*)\/(?:INFO|WARN|ERROR|DEBUG|FATAL)\]|--fml\.mcVersion|net\.minecraftforge|net\.neoforged|net\.fabricmc/;
   const ancient = ancientRe.test(text);
   const legacy = legacyRe.test(text);
   const modern = modernRe.test(text);
@@ -1317,6 +1548,7 @@ function javaHintFor(version) {
   if (isNewEraVersion(version)) return "Java 25";
   const v = normalizeVersion(version);
   if (!v) return null;
+  if (parseInt(v, 10) >= 25) return "Java 25"; // 25.x 正式版（非快照）也走年度版本号
   if (versionLessThan(v, "1.7")) return "Java 7（新系统可用 Java 8 兼容运行）";
   if (versionLessThan(v, "1.17")) return "Java 8";
   if (versionLessThan(v, "1.20.5")) return "Java 17";
@@ -1458,7 +1690,7 @@ const DIAGNOSIS_RULES = [
   },
   {
     id: "zipCorrupt",
-    test: t => /ZipException|invalid entry|invalid LOC header|Invalid CEN header|Failed to load mod/i.test(t),
+    test: t => /ZipException|invalid entry|invalid LOC header|Invalid CEN header|Failed to load mod file/i.test(t),
     result: "模组文件损坏",
     comment: "jar 文件下载不完整，或者已经损坏。",
     prescription: "重新下载报错的模组，确认文件大小跟来源一致。"
@@ -1487,7 +1719,7 @@ const DIAGNOSIS_RULES = [
   },
   {
     id: "opengl",
-    test: t => /Pixel format not accelerated|OpenGLException|Failed to create window|GLFW error|GL_INVALID/i.test(t),
+    test: t => /Pixel format not accelerated|OpenGLException|Failed to create window|GLFW error|GL_INVALID|GLFW error 65542|WGL: The driver does not appear to support OpenGL|Failed to initialize GLFW/i.test(t),
     result: "显卡驱动 / OpenGL 问题",
     comment: "显卡驱动太老，或显卡不支持游戏需要的 OpenGL 版本。",
     prescription: "更新显卡驱动；集显用户试试独显，或降低画质、关闭光影。"
@@ -1603,6 +1835,162 @@ const DIAGNOSIS_RULES = [
     unlockOnHit: "OptiFine 受害者"
   }
 ];
+
+
+/* ============================================================
+ *  9.4 v1.2：规则权重与新规则
+ *      v1.2 不再“谁先匹配谁赢”，改成按证据位置打分：
+ *      Description / Caused by / 崩溃头 = 高权重，正文 = 普通，Mod List = 直接跳过
+ * ============================================================ */
+const RULE_TUNING = {
+  permgen:            { weight: 7,   family: "memory" },
+  oom:                { weight: 6.5, family: "memory" },
+  javaVersion:        { weight: 7,   family: "java" },
+  missingDependency:  { weight: 7,   family: "missing" },
+  duplicateMod:       { weight: 6,   family: "mods" },
+  zipCorrupt:         { weight: 6,   family: "jar" },
+  sideMismatch:       { weight: 6.5, family: "side" },
+  missingJar:         { weight: 7,   family: "jar" },
+  unsatisfiedLink:    { weight: 6.5, family: "native" },
+  opengl:             { weight: 6.5, family: "graphics" },
+  fabricEntry:        { weight: 6.5, family: "loader" },
+  fmlLoaderException: { weight: 6,   family: "loader" },
+  forgeLoad:          { weight: 5.5, family: "loader" },
+  mixin:              { weight: 6,   family: "mixin" },
+  modConflict:        { weight: 3.5, family: "modconflict", generic: true },
+  verifyError:        { weight: 6,   family: "jar" },
+  stackOverflow:      { weight: 5,   family: "logic" },
+  arrayBounds:        { weight: 4.5, family: "logic" },
+  ticking:            { weight: 6.5, family: "tick" },
+  npe:                { weight: 3.5, family: "npe", generic: true },
+  jsonCorrupt:        { weight: 5.5, family: "config" },
+  accessDenied:       { weight: 5.5, family: "permission" },
+  network:            { weight: 3.5, family: "network", generic: true },
+  optifine:           { weight: 3,   family: "optifine", generic: true }
+};
+
+const V12_RULES = [
+  {
+    id: "jvmCrash", weight: 7, family: "native",
+    test: t => /#\s*(?:EXCEPTION_ACCESS_VIOLATION|EXCEPTION_STACK_OVERFLOW|SIGSEGV)|A fatal error has been detected by the Java Runtime Environment/i.test(t),
+    result: "JVM 原生崩溃（不是普通 Java 异常）",
+    comment: "Java 虚拟机自己崩了，常见于显卡驱动、内存条、超频或带原生库的模组；普通 crash-report 里看不到这种现场。",
+    prescription: "先更新显卡驱动、关超频和光影；还崩就换一个 Java / 减少模组，重点排查带 .dll / .so 的模组。"
+  },
+  {
+    id: "metaspace", weight: 7, family: "memory",
+    test: t => /OutOfMemoryError:\s*Metaspace/i.test(t),
+    result: "元空间内存溢出（Metaspace）",
+    comment: "Java 8 以后类信息存在 Metaspace，模组太多、重复加载都会把它撑爆；它和普通堆内存溢出不是一回事。",
+    prescription: "启动参数加 -XX:MaxMetaspaceSize=512m（不够再往上加）；还不行就删掉重复 / 不用的模组。",
+    counter: "oomCount", achievement: "赛博华佗", achievementAt: 10
+  },
+  {
+    id: "heap32", weight: 7, family: "memory",
+    test: t => /Invalid maximum heap size|Could not reserve enough space for object heap|Too small maximum heap/i.test(t),
+    result: "内存参数超出上限（多半是 32 位 Java）",
+    comment: "你给 -Xmx 分了超过 1.5G 左右的内存，但用的是 32 位 Java，它根本拿不到这么多。",
+    prescription: "换 64 位 Java；32 位 Java 一般最多只能分 1G~1.5G，别写 4G/8G。"
+  },
+  {
+    id: "findException", weight: 6.5, family: "java-module",
+    test: t => /java\.lang\.module\.FindException|Module .* not found/i.test(t),
+    result: "Java 模块缺失",
+    comment: "Java 9+ 的模块系统找不到需要的模块，常见于启动参数乱加 --add-modules，或者 Java 版本不对。",
+    prescription: "先换回对应版本的 Java；检查启动参数里的 --add-modules / --module-path，不确定就清空重试。"
+  },
+  {
+    id: "fabricIncompatible", weight: 8, family: "missing",
+    test: t => /Incompatible mod set!|Mod resolution encountered an incompatible mod set|Mod resolution failed/i.test(t),
+    result: "Fabric 依赖对不上（这套模组装不上）",
+    comment: "Fabric 在启动前就把模组依赖算了一遍，发现版本对不上，于是直接拒绝启动。它其实已经把答案写在日志里了。",
+    prescription: "照着下面「Fabric 给的方案」装对应版本的模组；它让你降级就降级，别硬顶。",
+    extra: t => {
+      const lines = [];
+      const re = /(?:^|\n)[ \t]*[-•][ \t]*Install[ \t]+([\w.-]+),?[ \t]+version[ \t]+([\w.+-]+)(?:[ \t]+or[ \t]+later)?/gi;
+      let m;
+      while ((m = re.exec(t)) && lines.length < 8) lines.push(`「${m[1]}」${m[2]}`);
+      const req = [];
+      const re2 = /Mod[ \t]+'?([\w.-]+)'?[ \t]+requires[ \t]+(?:version[ \t]+)?([\w.+-]+)[ \t]+of[ \t]+(?:mod[ \t]+)?'?([\w.-]+)'?/gi;
+      while ((m = re2.exec(t)) && req.length < 5) req.push(`${m[1]} 需要 ${m[3]} ${m[2]}`);
+      const outLines = [];
+      if (lines.length) outLines.push("📎 Fabric 给的方案：" + lines.join("、"));
+      if (req.length) outLines.push("📎 依赖要求：" + req.join("；"));
+      return outLines;
+    }
+  },
+  {
+    id: "neoforge", weight: 6, family: "loader",
+    test: t => /net\.neoforged\.[\w.]*(?:ModLoadingException|LoadingFailedException)/i.test(t),
+    result: "NeoForge 加载失败",
+    comment: "NeoForge 在加载模组时抛了异常，通常是某个模组不兼容当前 NeoForge 版本。",
+    prescription: "看异常下面点名的模组，更新到支持当前 NeoForge 的版本；Forge 模组不能直接塞进 NeoForge。",
+    extra: t => {
+      const deps = extractMissingDeps(t);
+      return deps.length ? ["📎 日志中疑似相关的模组：" + deps.map(d => `「${d}」`).join("、")] : [];
+    }
+  },
+  {
+    id: "resourcePack", weight: 5.5, family: "resource",
+    test: t => /Failed to load resource pack|Unable to load (?:resource )?pack|resource pack .* (?:failed|invalid)|pack\.mcmeta/i.test(t),
+    result: "资源包加载失败",
+    comment: "资源包格式不对、版本不匹配，或者压缩包损坏，游戏读不进去。",
+    prescription: "先移除最近加的资源包；确认资源包版本和游戏版本一致，别把 Java 版和基岩版资源包混用。"
+  },
+  {
+    id: "shaderpack", weight: 5.5, family: "graphics",
+    test: t => /Failed to load shader|shaderpack .* (?:failed|error)|Iris.*(?:exception|error)|Oculus.*(?:exception|error)/i.test(t),
+    result: "光影加载失败",
+    comment: "光影包和当前 Iris / Oculus 版本对不上，或者显卡驱动撑不住。",
+    prescription: "先关光影进游戏；更新 Iris / Oculus 和显卡驱动；还不行就换一个光影包。"
+  },
+  {
+    id: "watchdog", weight: 6, family: "server",
+    test: t => /Server\s*Watchdog|Watchdog thread.*(?:failed|crash|interrupt)/i.test(t),
+    result: "服务器看门狗超时",
+    comment: "服务器一个 tick 卡太久，看门狗以为它死了，直接把进程干掉。常见于区块加载、实体过多或某个模组死循环。",
+    prescription: "看日志里 watchdog 点名的线程 / 模组；减少实体和区块加载压力，或删掉卡顿的模组。"
+  },
+  {
+    id: "exitCode", weight: 5.5, family: "exit",
+    test: t => !/----\s*Minecraft Crash Report\s*----/i.test(t)
+      && !/#\s*A fatal error has been detected/i.test(t)
+      && !/^\s*Description:/im.test(t)
+      && t.length < 8000
+      && /(?:exit\s*code|退出代码|Process exited with code)\s*[:：]?\s*(-?\d+)/i.test(t),
+    result: "游戏进程异常退出（只有退出代码）",
+    comment: "启动器只留下了退出代码，没有完整崩溃报告，这种情况只能靠代码和启动器日志推断。",
+    prescription: ctx => {
+      const code = ctx && ctx.exitCode;
+      if (code === -1073741819) return "这是 0xC0000005（内存访问冲突）：优先更新显卡驱动、关光影，再排查带原生库的模组。";
+      if (code === -1073740791) return "这是 0xC0000409（栈溢出 / 驱动异常）：更新显卡驱动，关掉超频和光影。";
+      if (code === -1073741502) return "这是 0xC0000142（DLL 初始化失败）：多半是 Java 或系统运行库损坏，重装 64 位 Java。";
+      if (code === -805306369) return "这是 0xCFFFFFFF：常见于内存不足或 Java 被杀，先加大内存 / 关掉占内存的程序。";
+      if (code === -1) return "退出代码 -1 只是「异常退出」，真正原因通常在启动器日志末尾；把最后 100 行一起贴进来。";
+      return "把启动器日志最后 100 行一起贴进来；同时换 64 位 Java、更新显卡驱动。";
+    },
+    extra: t => {
+      const m = t.match(/(?:exit\s*code|退出代码|Process exited with code)\s*[:：]?\s*(-?\d+)/i);
+      return m ? [`📎 退出代码：${m[1]}`] : [];
+    }
+  },
+  {
+    id: "projectEX", weight: 11, family: "missing",
+    test: t => /\bprojectex\b/i.test(t) && !/\bprojecte\b/i.test(t)
+      && /Missing or unsupported mandatory dependencies|Missing dependency|Missing mods?|which is missing|A dependency of .* is missing/i.test(t),
+    result: "缺胳膊少腿（ProjectE 家族）",
+    comment: "装了 ProjectEX 居然不装祖宗 ProjectE？这属于忘本（代码版）。ProjectEX 只是附属，本体不装它没法跑。",
+    prescription: "去 CurseForge / MCBBS 下个 ProjectE，版本要和 ProjectEX 对得上。",
+    counter: "missingCount", achievement: "缝合怪大圆满", achievementAt: 10
+  }
+];
+
+V12_RULES.forEach(r => DIAGNOSIS_RULES.push(r));
+DIAGNOSIS_RULES.forEach((r, i) => {
+  r.order = i;
+  if (r.weight == null) r.weight = 5;
+  if (RULE_TUNING[r.id]) Object.assign(r, RULE_TUNING[r.id]);
+});
 
 /* ============================================================
  *  9.5 梗体诊断文案（开启「梗体诊断」后替换锐评 / 处方）
@@ -1735,6 +2123,420 @@ const MEME_DIAGNOSIS = {
   }
 };
 
+
+/* ============================================================
+ *  9.6 v1.2 新增诊断的梗体文案
+ * ============================================================ */
+Object.assign(MEME_DIAGNOSIS, {
+  jvmCrash: {
+    result: "JVM 原生崩溃（虚拟机自己躺了）",
+    comment: "不是模组抛异常，是 Java 虚拟机本人当场倒地，通常跟显卡驱动、内存条、超频或原生库有关。",
+    prescription: "更新显卡驱动、关超频和光影；还崩就换 Java、减模组，重点排查带 .dll / .so 的。"
+  },
+  metaspace: {
+    result: "元空间溢出（类多到住不下）",
+    comment: "Java 8 以后类信息都住 Metaspace，你一口气塞太多模组，宿舍直接爆满，房东 Java 把你赶出来了。",
+    prescription: "加 -XX:MaxMetaspaceSize=512m 先扩个房；还挤就删重复模组，别让它们打地铺。"
+  },
+  heap32: {
+    result: "内存要太多（32 位 Java：我真的拿不出）",
+    comment: "你张口就要 4G/8G，可 32 位 Java 的口袋最多装 1G 多，它当场表示臣妾做不到。",
+    prescription: "换 64 位 Java；32 位就老实写 1G~1.5G，别许愿。"
+  },
+  findException: {
+    result: "Java 模块找不到（零件不在车上）",
+    comment: "Java 9+ 的模块系统点名要一个模块，结果翻遍车厢都没有，启动直接罢工。",
+    prescription: "换回对应版本的 Java；启动参数里的 --add-modules / --module-path 不会写就清空。"
+  },
+  fabricIncompatible: {
+    result: "Fabric 依赖对不上（拼图版型不对）",
+    comment: "Fabric 还没启动就把你这套模组算了一遍：这块拼图跟那块对不上，于是拒绝开工，答案都写日志里了。",
+    prescription: "照它给的「Install xxx version yyy」装，让你降级就降级，别跟加载器讲骨气。"
+  },
+  neoforge: {
+    result: "NeoForge 加载失败（新房东不收旧租客）",
+    comment: "NeoForge 加载模组时抛异常，多半是某个模组还拿着 Forge 的旧身份证。",
+    prescription: "更新点名模组到 NeoForge 版本；Forge 模组别硬塞进 NeoForge。"
+  },
+  resourcePack: {
+    result: "资源包读不进去（画册撕页了）",
+    comment: "资源包格式或版本不对，游戏翻两页发现缺页，干脆不看了。",
+    prescription: "先移除最近加的资源包；确认版本对得上，Java 版和基岩版别混用。"
+  },
+  shaderpack: {
+    result: "光影加载失败（灯泡炸了）",
+    comment: "光影包和 Iris / Oculus 版本对不上，或者显卡驱动顶不住，画面还没亮先黑屏。",
+    prescription: "先关光影进游戏；更新 Iris / Oculus 和显卡驱动；不行就换个光影包。"
+  },
+  watchdog: {
+    result: "看门狗超时（服务器卡到被拔管）",
+    comment: "服务器一个 tick 卡太久，看门狗以为它凉了，直接拔管重启，属于卡死的极端疗法。",
+    prescription: "看 watchdog 点名的线程和模组；少加载区块和实体，删掉卡顿模组。"
+  },
+  exitCode: {
+    result: "只有退出代码（现场被清空了）",
+    comment: "启动器只留下一串退出代码，真正的案发现场没了，只能靠代码和经验推理。",
+    prescription: "把启动器日志最后 100 行也贴进来；先换 64 位 Java、更新显卡驱动。"
+  },
+  projectEX: {
+    result: "缺胳膊少腿（ProjectE 家族·忘本现场）",
+    comment: "装了 ProjectEX 不装 ProjectE，属于认贼作父、数典忘祖，ProjectE 本人连夜买站票走了。",
+    prescription: "去 CurseForge / MCBBS 下个 ProjectE，版本跟 ProjectEX 对上，把祖宗请回来。"
+  }
+});
+
+/* ============================================================
+ *  9.7 v1.2：日志体检、模组归因、多病因评分
+ * ============================================================ */
+const PACKAGE_MOD_HINTS = [
+  [/^com\.simibubi(?:\.|$)/, "Create"],
+  [/^net\.createmod(?:\.|$)/, "Create"],
+  [/^com\.jozufozu(?:\.|$)/, "Flywheel"],
+  [/^com\.tterrag(?:\.|$)/, "Registrate"],
+  [/^mezz\.jei(?:\.|$)/, "JEI"],
+  [/^me\.shedaniel(?:\.|$)/, "REI / Cloth Config"],
+  [/^dev\.emi(?:\.|$)/, "EMI"],
+  [/^top\.theillusivec4(?:\.|$)/, "Curios"],
+  [/^software\.bernie(?:\.|$)/, "GeckoLib"],
+  [/^vazkii(?:\.|$)/, "Botania / Quark"],
+  [/^appeng(?:\.|$)/, "Applied Energistics 2"],
+  [/^mekanism(?:\.|$)/, "Mekanism"],
+  [/^cofh(?:\.|$)/, "Thermal 系列"],
+  [/^slimeknights(?:\.|$)/, "Tinkers' Construct"],
+  [/^net\.caffeinemc(?:\.|$)/, "Sodium"],
+  [/^net\.irisshaders(?:\.|$)/, "Iris"],
+  [/^net\.optifine(?:\.|$)/, "OptiFine"],
+  [/^optifine(?:\.|$)/, "OptiFine"],
+  [/^com\.terraformersmc(?:\.|$)/, "Mod Menu"],
+  [/^dev\.architectury(?:\.|$)/, "Architectury API"],
+  [/^net\.darkhax(?:\.|$)/, "Bookshelf"],
+  [/^com\.blakebr0(?:\.|$)/, "Cucumber / 神秘农业"]
+];
+
+function detectLogType(text) {
+  if (/----\s*Minecraft Crash Report\s*----/i.test(text) || /^\s*Description:/im.test(text)) return "crash-report";
+  if (/#\s*A fatal error has been detected by the Java Runtime Environment/i.test(text)) return "hs_err";
+  if (/\[(?:Render thread|Client thread|main|Server thread)\/(?:INFO|WARN|ERROR|FATAL)\]/i.test(text)) return "游戏日志";
+  if (/PCL|HMCL|Hello Minecraft! Launcher|BakaXL/i.test(text)) return "启动器日志";
+  return "未知";
+}
+
+function detectLoader(text) {
+  const grab = re => { const m = text.match(re); return m ? " " + m[1] : ""; };
+  if (/NeoForge|net\.neoforged/i.test(text)) return "NeoForge" + grab(/(?:NeoForge|net\.neoforged)[^\d\n]{0,25}(\d+(?:\.\d+){1,3})/i);
+  if (/Fabric Loader|fabricloader|net\.fabricmc|fabric-api/i.test(text)) return "Fabric" + grab(/(?:Fabric Loader|fabricloader|net\.fabricmc)[^\d\n]{0,25}(\d+(?:\.\d+){1,3})/i);
+  if (/Quilt Loader|quiltloader/i.test(text)) return "Quilt" + grab(/(?:Quilt Loader|quiltloader)[^\d\n]{0,25}(\d+(?:\.\d+){1,3})/i);
+  if (/Forge Mod Loader|net\.minecraftforge|--fml\.|Forge Version/i.test(text)) {
+    return "Forge" + grab(/(?:Forge(?: Mod Loader)?(?: version)?|net\.minecraftforge)[^\d\n]{0,30}(\d+(?:\.\d+){1,3})/i);
+  }
+  return "原版 / 未知";
+}
+
+function detectJava(text) {
+  const m = text.match(/Java Version:\s*([^\s,]+)/i)
+    || text.match(/java\.version\s*[=:]\s*([^\s,;]+)/i)
+    || text.match(/# JRE version:[^\n]*?\((\d+(?:\.\d+)+)/i)
+    || text.match(/Using Java\s+([^\s,;]+)/i);
+  if (!m) return null;
+  const full = m[1];
+  const major = full.startsWith("1.") ? parseInt(full.split(".")[1], 10) : parseInt(full, 10);
+  return major ? { full, major } : null;
+}
+
+function detectMemory(text) {
+  let m = text.match(/-Xmx\s*(\d+)\s*([kKmMgG])/);
+  if (m) {
+    const n = Number(m[1]), u = m[2].toLowerCase();
+    const mb = u === "g" ? n * 1024 : u === "m" ? n : u === "k" ? Math.round(n / 1024) : Math.round(n / 1048576);
+    return { label: `-Xmx${m[1]}${m[2]}`, mb };
+  }
+  m = text.match(/up to\s+\d+\s+bytes\s*\((\d+)\s*MB\)/i);
+  if (m) return { label: `${m[1]} MB（日志记录的上限）`, mb: Number(m[1]) };
+  m = text.match(/Memory:\s*(\d+)\s*bytes/i);
+  if (m) return { label: `${Math.round(Number(m[1]) / 1048576)} MB（当前占用）`, mb: Math.round(Number(m[1]) / 1048576) };
+  return null;
+}
+
+function detectOS(text) {
+  const m = text.match(/(?:Operating System|os\.name)\s*[:=]\s*([^\n]+)/i);
+  return m ? m[1].trim().slice(0, 70) : null;
+}
+
+// 解析 crash-report 里的 Mod List / Fabric Mods / Loaded Mods
+function parseModList(text) {
+  const lines = text.split(/\r?\n/);
+  let start = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*(?:Mod List|Fabric Mods|Loaded Mods)\s*:\s*$/i.test(lines[i])) { start = i + 1; break; }
+  }
+  if (start < 0) return [];
+  const mods = [];
+  for (let i = start; i < lines.length && mods.length < 800; i++) {
+    const raw = lines[i];
+    if (!raw.trim()) { if (mods.length) break; else continue; }
+    if (!/^[\t ]/.test(raw)) break;
+    let line = raw.trim().replace(/^[|`+\-–—]+\s*/, "");
+    if (!line) continue;
+    const parts = line.split(/\t+|\s{2,}/).map(s => s.trim()).filter(Boolean);
+    let name, id, version;
+    if (parts.length >= 3) {
+      // 1.13+ 的格式是 modid<TAB>显示名<TAB>版本<TAB>文件；也兼容显示名在前的旧格式
+      const looksId = s => /^[a-z0-9_.-]{2,80}$/.test(s);
+      if (looksId(parts[0])) { id = parts[0]; name = parts[1]; }
+      else if (looksId(parts[1])) { id = parts[1]; name = parts[0]; }
+      else { id = parts[0]; name = parts[0]; }
+      version = parts[2];
+    } else if (parts.length === 2) {
+      id = parts[0]; name = parts[0]; version = parts[1];
+      const colon = line.match(/^([^:]{1,60}):\s*(.+)$/);
+      if (colon) { id = colon[1].trim(); name = colon[1].trim(); version = colon[2].trim(); }
+    } else {
+      const brace = line.match(/^([^{]+?)\{([^}]+)\}/);
+      if (brace) {
+        name = brace[1].trim();
+        version = brace[2].trim();
+        id = name.toLowerCase().replace(/[^a-z0-9]+/g, "");
+      } else {
+        const c = line.match(/^([\w.-]+):\s*(.+?)\s+([\w.+-]+)$/);
+        if (c) { id = c[1]; name = c[1]; version = c[3]; }
+      }
+    }
+    if (!id || !version) continue;
+    id = String(id).toLowerCase().replace(/\s+/g, "").replace(/^[^a-z0-9]+|[^a-z0-9]+$/g, "");
+    if (!/^[a-z0-9_.-]{2,80}$/.test(id)) continue;
+    if (!/^[\w.+\-]{1,80}$/.test(String(version))) continue;
+    mods.push({ name: name || id, id, version: String(version) });
+  }
+  return mods;
+}
+
+function resolveModForPackage(pkg, mods) {
+  const segs = pkg.toLowerCase().split(".");
+  let best = null;
+  for (const m of mods) {
+    if (!m.id || m.id.length < 3) continue;
+    if (segs.includes(m.id) && (!best || m.id.length > best.id.length)) best = m;
+  }
+  if (best) return { name: best.name && best.name !== best.id ? best.name : best.id, id: best.id };
+  const lower = pkg.toLowerCase();
+  for (const [re, name] of PACKAGE_MOD_HINTS) if (re.test(lower)) return { name, id: null };
+  return { name: pkg, id: null };
+}
+
+// 从堆栈里数每个模组出现多少帧，点名 Top 3
+function extractSuspiciousMods(text, mods) {
+  const skip = /^(?:java|javax|jdk|sun|com\.sun|net\.minecraft|com\.mojang|net\.minecraftforge|net\.neoforged|cpw\.mods|net\.fabricmc|org\.spongepowered|org\.objectweb|com\.google|org\.apache|io\.netty|org\.lwjgl|it\.unimi|org\.jetbrains|com\.electronwill|org\.slf4j|ch\.qos|org\.antlr|net\.java\.dev\.jna|oshi|org\.joml)/;
+  const frames = new Map();
+  const sample = new Map();
+  let seen = 0;
+  for (const ln of text.split(/\r?\n/)) {
+    const m = ln.match(/^\s*at\s+([\w.$]+)\(/);
+    if (!m) continue;
+    const cls = m[1];
+    if (skip.test(cls)) continue;
+    const pkg = cls.split(".").slice(0, 3).join(".");
+    const resolved = resolveModForPackage(pkg, mods);
+    const key = resolved.name;
+    frames.set(key, (frames.get(key) || 0) + 1);
+    if (!sample.has(key)) sample.set(key, cls);
+    if (++seen > 4000) break;
+  }
+  return [...frames.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([name, count]) => ({ name, count, sample: sample.get(name) }));
+}
+
+// 在日志里找“证据行”，并给分；Mod List 里的名字不算证据
+function findEvidence(lines, rule) {
+  let inModList = false;
+  let best = null;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\s*(?:Mod List|Fabric Mods|Loaded Mods)\s*:\s*$/i.test(line)) { inModList = true; continue; }
+    if (inModList) {
+      if (line.trim() === "") continue;
+      if (!/^[\t ]/.test(line)) inModList = false;
+      else continue;
+    }
+    let hit = false;
+    try { hit = rule.test(line); } catch (e) { hit = false; }
+    if (!hit) continue;
+    let bonus = 0;
+    if (i < 100) bonus += 1;
+    if (/^\s*Description:/i.test(line)) bonus += 2;
+    if (/^\s*Caused by:/i.test(line)) bonus += 1.5;
+    if (/\b(?:Exception|Error)\b/.test(line)) bonus += 0.5;
+    if (/^\s*at\s/.test(line)) bonus += 0.5;
+    bonus = Math.min(bonus, 3.5);
+    if (!best || bonus > best.bonus) best = { line: line.trim().slice(0, 200), bonus };
+    if (best.bonus >= 3) break;
+  }
+  return best;
+}
+
+function confidenceFor(c) {
+  if (c.score >= 9) return "高";
+  if (c.score >= 6.5) return "中";
+  return "低";
+}
+
+function collectCandidates(raw, lines) {
+  const list = [];
+  for (const rule of DIAGNOSIS_RULES) {
+    let hit = false;
+    try { hit = !!rule.test(raw); } catch (e) { hit = false; }
+    if (!hit) continue;
+    const ev = findEvidence(lines, rule);
+    list.push({ rule, ev, score: (rule.weight || 5) + (ev ? ev.bonus : 0) });
+  }
+  list.sort((a, b) =>
+    b.score - a.score ||
+    (b.rule.weight || 5) - (a.rule.weight || 5) ||
+    a.rule.order - b.rule.order
+  );
+  const picked = [];
+  const families = new Set();
+  for (const c of list) {
+    const fam = c.rule.family || c.rule.id;
+    if (families.has(fam)) continue; // 同一类问题只留把握最大的，避免刷屏
+    families.add(fam);
+    picked.push(c);
+    if (picked.length >= 3) break;
+  }
+  return picked;
+}
+
+function prepareCause(c, meta, raw) {
+  const rule = c.rule;
+  const meme = memeMode ? MEME_DIAGNOSIS[rule.id] : null;
+  const resultText = (meme && meme.result) || rule.result;
+  const commentText = (meme && meme.comment) || rule.comment;
+  const p = meme ? (meme.prescription || rule.prescription) : rule.prescription;
+  const presText = typeof p === "function"
+    ? p({ version: meta.gameVersion, era: meta.era, meta, exitCode: meta.exitCode, text: raw })
+    : p;
+  const extras = typeof rule.extra === "function" ? (rule.extra(raw) || []) : [];
+  c.view = { resultText, commentText, presText, extras };
+  return c;
+}
+
+function printCause(c, primary) {
+  const v = c.view;
+  out(`【${primary ? "主因" : "次因"}】${v.resultText}（置信度：${confidenceFor(c)}）`, primary ? "err" : "warn");
+  out(`【锐评】${v.commentText}`, "warn");
+  out(`【处方】${v.presText}`, "ok");
+}
+
+function printMedicalCard(meta) {
+  out("📋 病历卡", "gold");
+  out(`  版本：${meta.gameVersion || "未识别"} · ${meta.loader} · ${meta.logType}`, "dim");
+  out(`  Java：${meta.java ? meta.java.full : "未识别"}${meta.javaHint ? `（建议 ${meta.javaHint}）` : ""}`, "dim");
+  out(`  内存：${meta.memory ? meta.memory.label : "未记录"} · 模组：${meta.modsCount} 个`, "dim");
+  if (meta.os) out(`  系统：${meta.os}`, "dim");
+}
+
+function buildInsights(meta, mods, raw, picked) {
+  const tips = [];
+  const byId = new Map();
+  for (const m of mods) {
+    if (!byId.has(m.id)) byId.set(m.id, new Set());
+    byId.get(m.id).add(m.version);
+  }
+  const dups = [...byId.entries()].filter(([, vs]) => vs.size > 1);
+  if (dups.length && !picked.some(c => c.rule.id === "duplicateMod")) {
+    tips.push({
+      cls: "warn",
+      text: `模组重复：${dups.slice(0, 3).map(([id, vs]) => `${id}（${[...vs].join(" / ")}）`).join("、")}；去 mods 文件夹只留一个版本。`
+    });
+  }
+
+  if (meta.java && meta.javaHint && !picked.some(c => c.rule.id === "javaVersion")) {
+    const wantM = String(meta.javaHint).match(/(\d+)/);
+    const want = wantM ? Number(wantM[1]) : 0;
+    if (want && meta.java.major) {
+      if (meta.java.major < want) {
+        tips.push({ cls: "warn", text: `当前 Java ${meta.java.major}，这个版本建议 ${meta.javaHint}；版本偏低，容易报 UnsupportedClassVersionError。` });
+      } else if (meta.era !== "ancient" && meta.java.major > want + 4) {
+        tips.push({ cls: "warn", text: `当前 Java ${meta.java.major}，这个版本建议 ${meta.javaHint}；Java 太高也可能崩，建议换回推荐版本。` });
+      }
+    }
+  }
+
+  if (meta.memory && meta.modsCount >= 120 && meta.memory.mb > 0 && meta.memory.mb < 4096) {
+    tips.push({ cls: "warn", text: `模组 ${meta.modsCount} 个，但只分了 ${meta.memory.label}；整合包建议 4G~8G。` });
+  }
+  if (meta.memory && meta.memory.mb > 12288) {
+    tips.push({ cls: "dim", text: `内存分到 ${meta.memory.label} 偏高，GC 反而容易卡；一般 4G~8G 够用。` });
+  }
+  if (/32-bit|32 bit|Java HotSpot\(TM\) Client VM/i.test(raw)) {
+    tips.push({ cls: "warn", text: "检测到 32 位 Java：最多只能分 1G~1.5G 内存，建议换 64 位 Java。" });
+  }
+  if (meta.modsCount === 0 && meta.loader !== "原版 / 未知" && meta.logType === "crash-report"
+      && !picked.some(c => c.rule.id === "fabricIncompatible")) {
+    tips.push({ cls: "dim", text: "没解析到 Mod List，日志可能被截断；把完整 crash-report 丢进来会更准。" });
+  }
+  return tips.slice(0, 4);
+}
+
+function buildCardMarkdown(meta, picked, insights, suspects) {
+  const L = [];
+  L.push("### MC 赛博急救 · 病历卡");
+  L.push(`- 游戏版本：${meta.gameVersion || "未识别"}${meta.loader && meta.loader !== "原版 / 未知" ? `（${meta.loader}）` : ""}`);
+  L.push(`- Java：${meta.java ? meta.java.full : "未识别"}${meta.javaHint ? `（建议 ${meta.javaHint}）` : ""}`);
+  L.push(`- 内存：${meta.memory ? meta.memory.label : "未记录"}`);
+  L.push(`- 模组：${meta.modsCount} 个`);
+  L.push(`- 日志：${meta.logType}，${meta.chars} 字符`);
+  if (meta.os) L.push(`- 系统：${meta.os}`);
+  L.push("");
+
+  if (!picked.length) {
+    L.push("**诊断结果**：没识别出明确病因（置信度：低）");
+  } else {
+    picked.forEach((c, i) => {
+      const v = c.view;
+      L.push(`**【${i === 0 ? "主因" : "次因"}】${v.resultText}**（置信度：${confidenceFor(c)}）`);
+      L.push(`- 处方：${v.presText}`);
+      (v.extras || []).forEach(e => L.push(`- ${String(e).replace(/^📎\s*/, "").replace(/`/g, "'")}`));
+      if (c.ev && c.ev.line) L.push(`- 证据：${String(c.ev.line).replace(/`/g, "'")}`);
+      L.push("");
+    });
+  }
+
+  if (suspects.length) {
+    L.push(`**可疑模组**：${suspects.map(s => `${s.name}（${s.count} 帧）`).join("、")}`);
+    if (suspects[0].sample) L.push(`- 最可疑的一帧：\`${String(suspects[0].sample).replace(/`/g, "'")}\``);
+  }
+  if (insights.length) {
+    L.push("**顺带发现**：");
+    insights.forEach(t => L.push(`- ${t.text}`));
+  }
+  L.push("");
+  L.push(`> 由 MC 赛博急救与空投系统 v${APP_VERSION} 本地生成，仅供参考。`);
+  return L.join("\n");
+}
+
+async function copyText(text) {
+  if (!text) return false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (e) {}
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok;
+  } catch (e) { return false; }
+}
+
 /* ============================================================
  *  10. 核心诊断逻辑
  * ============================================================ */
@@ -1754,16 +2556,31 @@ function runDiagnose() {
   const d = new Date();
   if (d.getHours() === 4 && d.getMinutes() < 30) unlock("凌晨四点的洛杉矶");
 
-  // v1.1：不再截取最后 5000 字符，整篇日志直接参与识别
-  const text = raw;
+  // v1.2：整篇日志参与识别，但会按“证据在哪儿”打分，Mod List 里的名字不算证据
   const gameVer = detectGameVersion(raw);
   const era = detectLogEra(raw, gameVer);
   const newEra = isNewEraVersion(gameVer);
+  const mods = parseModList(raw);
+  const exitM = raw.match(/(?:exit\s*code|退出代码|Process exited with code)\s*[:：]?\s*(-?\d+)/i);
+  const meta = {
+    gameVersion: gameVer,
+    era,
+    logType: detectLogType(raw),
+    loader: detectLoader(raw),
+    java: detectJava(raw),
+    javaHint: javaHintFor(gameVer),
+    memory: detectMemory(raw),
+    os: detectOS(raw),
+    mods,
+    modsCount: mods.length,
+    chars: raw.length,
+    exitCode: exitM ? Number(exitM[1]) : null
+  };
 
   out(memeMode ? "──────── 开始诊断（梗体模式）────────" : "──────── 开始诊断 ────────", "dim");
-  out(`原文 ${raw.length} 字符，已对整篇日志做识别（不再截断）。`, "dim");
-  if (memeMode) out("📎 梗体诊断已开启：锐评含梗量较高，但处方是真的。", "dim");
+  out(`原文 ${raw.length} 字符 · 日志类型：${meta.logType}`, "dim");
   if (gameVer) out(`📎 识别到游戏版本：${gameVer}${newEra ? "（26.1+ 年度版本号）" : ""}`, "dim");
+
   if (era === "ancient") {
     out("📎 检测到 1.7 之前的远古日志（1.6.4 / Beta / Alpha），已启用考古级兼容解析。", "dim");
     unlock("时光机修理工");
@@ -1779,79 +2596,73 @@ function runDiagnose() {
     out("📎 提示：26.1 起官方不再混淆，1.21.11 及之前的模组需要重新编译，不能直接搬过来用。", "dim");
   }
 
-  // 彩蛋：ProjectE 家族专属检测
-  const lower = text.toLowerCase();
-  const hasProjectEX = /\bprojectex\b/.test(lower);
-  const hasProjectE  = /\bprojecte\b/.test(lower);
-  const looksLikeMissing = /Missing or unsupported mandatory dependencies|Missing dependency|Missing mods|Missing mod|Mod .* requires|requires .* but it is not installed|A dependency of .* is missing/i.test(text);
+  printMedicalCard(meta);
+  if (raw.length > LOG_STORE_LIMIT) out("⚠️ 日志较长，本次不写入浏览器缓存（防止撑爆存储）。", "dim");
 
-  if (hasProjectEX && !hasProjectE && looksLikeMissing) {
-    if (memeMode) {
-      out("【诊断结果】缺胳膊少腿（ProjectE 家族·忘本现场）", "err");
-      out("【锐评】装了 ProjectEX 不装 ProjectE，属于认贼作父、数典忘祖，ProjectE 本人连夜买站票走了。", "warn");
-      out("【处方】去 CurseForge / MCBBS 下个 ProjectE，版本跟 ProjectEX 对上，把祖宗请回来。", "ok");
-    } else {
-      out("【诊断结果】缺胳膊少腿（ProjectE 家族）", "err");
-      out("【锐评】装了 ProjectEX 居然不装祖宗 ProjectE？这属于忘本。", "warn");
-      out("【处方】赶紧去 CurseForge / MCBBS 下个 ProjectE，版本要和 ProjectEX 对得上。", "ok");
-    }
-    stats.missingCount++; saveStats();
-    if (stats.missingCount >= 10) unlock("缝合怪大圆满");
-    countDiagnose();
-    return;
-  }
+  const lines = raw.split(/\r?\n/);
+  const picked = collectCandidates(raw, lines);
+  picked.forEach(c => prepareCause(c, meta, raw));
+  const suspects = extractSuspiciousMods(raw, mods).filter(s => s.count >= 2);
+  const insights = buildInsights(meta, mods, raw, picked);
 
-  // 通用规则匹配（命中一条即停，避免输出噪音）
-  for (const rule of DIAGNOSIS_RULES) {
-    if (!rule.test(text)) continue;
+  const primary = picked[0];
+  const secondary = picked.slice(1).filter(c => c.score >= 6).slice(0, 2);
 
-    const meme = memeMode ? MEME_DIAGNOSIS[rule.id] : null;
-    const resultText = (meme && meme.result) || rule.result;
-    const commentText = (meme && meme.comment) || rule.comment;
-    let pres = meme ? (meme.prescription || rule.prescription) : rule.prescription;
-    const presText = typeof pres === "function" ? pres({ version: gameVer, era }) : pres;
+  if (primary) {
+    printCause(primary, true);
+    if (primary.ev && primary.ev.line) out(`📎 证据：${primary.ev.line}`, "dim");
+    (primary.view.extras || []).forEach(e => out(e, "dim"));
 
-    out(`【诊断结果】${resultText}`, "err");
-    out(`【锐评】${commentText}`, "warn");
-    out(`【处方】${presText}`, "ok");
-
-    if (typeof rule.extra === "function") {
-      rule.extra(text).forEach(e => out(e, "dim"));
-    }
-
-    if (rule.unlockOnHit) unlock(rule.unlockOnHit);
-
-    if (rule.counter) {
-      stats[rule.counter] = (stats[rule.counter] || 0) + 1;
+    if (primary.rule.unlockOnHit) unlock(primary.rule.unlockOnHit);
+    if (primary.rule.counter) {
+      stats[primary.rule.counter] = (stats[primary.rule.counter] || 0) + 1;
       saveStats();
-      if (rule.achievement && rule.achievementAt && stats[rule.counter] >= rule.achievementAt) {
-        unlock(rule.achievement);
+      if (primary.rule.achievement && primary.rule.achievementAt && stats[primary.rule.counter] >= primary.rule.achievementAt) {
+        unlock(primary.rule.achievement);
       }
     }
-    if (memeMode) out("（以上锐评含梗量偏高，处方照着做就行，别光顾着笑。）", "dim");
-    countDiagnose();
-    return;
+
+    if (confidenceFor(primary) === "低") {
+      out("⚠️ 这条把握不大：日志里可能还有别的线索，建议把病历卡发群一起看。", "warn");
+    }
+
+    secondary.forEach(c => {
+      printCause(c, false);
+      if (c.ev && c.ev.line) out(`📎 证据：${c.ev.line}`, "dim");
+      (c.view.extras || []).forEach(e => out(e, "dim"));
+    });
+  } else {
+    stats.unknownCount++;
+    saveStats();
+    if (stats.unknownCount < 3) {
+      out(memeMode ? `没认出明确病因，先记一笔（${stats.unknownCount}/3）。` : `没认出明确病因（当前进度 ${stats.unknownCount}/3）。`, "warn");
+      out("把下面的病历卡复制发群，或者补上 crash-report 最后 200 行，命中率会高很多。", "dim");
+    } else {
+      stats.unknownCount = 0;
+      saveStats();
+      out("触发隐藏成就【百毒不侵】！三连未识别，把日志发给 UP 主让他头秃！", "gold");
+      unlock("百毒不侵");
+    }
   }
 
-  // 未知错误兜底
-  stats.unknownCount++;
-  saveStats();
-  if (stats.unknownCount < 3) {
-    out(memeMode
-      ? `未知错误，鉴定为外星模组在搞事（当前进度 ${stats.unknownCount}/3）。`
-      : `未知错误，是否装了外星人模组？(当前进度 ${stats.unknownCount}/3)`, "warn");
-    out(memeMode
-      ? "（真没辙就把 crash-report 最后 200 行发群里，让大佬们一起参悟。）"
-      : "（如果多次命中未知，建议把 crash-report 最后 200 行发到模组群 / MCBBS 求助）", "dim");
-  } else {
-    stats.unknownCount = 0; saveStats();
-    out(memeMode
-      ? "触发隐藏成就【百毒不侵】！这日志的含毒量已经能开药铺了，快发给 UP 主让他头秃！"
-      : "触发隐藏成就【百毒不侵】！把日志发到评论区让UP主头秃！", "gold");
-    unlock("百毒不侵");
+  if (suspects.length) {
+    out(`🔎 可疑模组：${suspects.map(s => `${s.name}（${s.count} 帧）`).join("、")}`, "warn");
+    out(`   最可疑的一帧：${suspects[0].sample}`, "dim");
   }
+
+  if (insights.length) {
+    out("【顺带发现】", "dim");
+    insights.forEach(t => out("  · " + t.text, t.cls || "dim"));
+  }
+
+  const shownCauses = primary ? [primary, ...secondary] : [];
+  lastCardMarkdown = buildCardMarkdown(meta, shownCauses, insights, suspects);
+  out("📋 病历卡已生成：点终端右上角「📋 复制病历卡」，可以直接发群求助。", "dim");
+  if (memeMode) out("（梗体诊断已开启：锐评含梗，处方是真的。）", "dim");
   countDiagnose();
 }
+
+
 
 // 成功诊断计数（见多识广）
 function countDiagnose() {
@@ -1895,11 +2706,50 @@ document.addEventListener("dragover", e => e.preventDefault());
 document.addEventListener("drop", e => { e.preventDefault(); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
 $("btnDiagnose").addEventListener("click", runDiagnose);
 
+$("btnCopyCard").addEventListener("click", async () => {
+  const text = (lastCardMarkdown || outputEl.innerText || outputEl.textContent || "").trim();
+  if (!text) { out("还没有诊断结果，先点「⚡ 开始诊断」。", "warn"); return; }
+  const ok = await copyText(text);
+  out(ok
+    ? "📋 病历卡已复制，直接粘贴到群里就行。"
+    : "复制失败：浏览器不让写剪贴板，请手动选中终端文字复制。", ok ? "ok" : "warn");
+});
+
+$("btnClearLocal").addEventListener("click", async () => {
+  const ok = await modal({
+    title: "🧹 清除本地记录",
+    html: "<p>会删除浏览器里保存的<strong>日志和终端记录</strong>，当前页面不会清空。</p><p class='dim'>主题、成就、设置不受影响。本页会暂停自动保存，防止刚清完又写回去；刷新后恢复。</p>",
+    buttons: [{ text: "取消", value: false }, { text: "确定清除", value: true }]
+  });
+  if (!ok) return;
+  try {
+    localStorage.removeItem("mcFixer.log");
+    localStorage.removeItem("mcFixer.output");
+  } catch (e) {}
+  storageOff = true;
+  out("🧹 已清除本地日志和终端记录，本页暂停自动保存。", "warn");
+});
+
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+    e.preventDefault();
+    runDiagnose();
+    return;
+  }
+  if (e.key === "Escape") {
+    const overlay = document.querySelector("#modalRoot .overlay");
+    if (!overlay) return;
+    const btn = overlay.querySelector(".modal-btns button");
+    if (btn) btn.click(); else overlay.remove();
+  }
+});
+
 // 清屏 + 强迫症患者检测
 let clearTimes = [];
 $("btnClear").addEventListener("click", () => {
   outputEl.innerHTML = "";
   logInput.value = "";
+  lastCardMarkdown = "";
   lastLogLen = 0;
   stats.emptyClickCount = 0;
   saveState();
@@ -1944,7 +2794,7 @@ function aboutNormal() {
 
   modal({
     title: "关于开发者",
-    html: '<p>本软件由 <span class="dev-name" id="devName">@某位不愿透露姓名的UP主</span> 用爱发电开发。</p><p class="dim">v1.1 · 纯本地运行</p>',
+    html: '<p>本软件由 <span class="dev-name" id="devName">@某位不愿透露姓名的UP主</span> 用爱发电开发。</p><p class="dim">v1.2 · 纯本地运行</p>',
     buttons: [{ text: "关闭", value: false }],
     onMount(box, overlay) {
       timer = setTimeout(() => { if (!isInterrupted) unlock("白嫖的终点"); }, 60000);
@@ -2041,8 +2891,8 @@ versionEl.addEventListener("click", () => {
   const n = vClickTimes.length;
 
   if (n === 1) out("喵？", "dim");
-  else if (n === 3) setVersion("v1.1 (你烦不烦啊？)");
-  else if (n === 10) setVersion("v1.1 (别点了！！)", "warn");
+  else if (n === 3) setVersion("v1.2 (你烦不烦啊？)");
+  else if (n === 10) setVersion("v1.2 (别点了！！)", "warn");
   else if (n >= 15) triggerDevil();
 });
 
@@ -2050,7 +2900,7 @@ function triggerDevil() {
   stats.vAngry = true;
   vClickTimes = [];
   window.open("https://b23.tv/wBpoyKl", "_blank");
-  setVersion('v1.1 🐶', "devil");
+  setVersion('v1.2 🐶', "devil");
   out("版本号大人被你激怒了！！！", "err");
   out("（提示：也许该右键点一下那只狗头？）", "dim");
 }
@@ -2063,7 +2913,7 @@ versionEl.addEventListener("contextmenu", async e => {
 
   if (v.trim().toUpperCase() === "GUN") {
     stats.vAngry = false;
-    setVersion("v1.1");
+    setVersion("v1.2");
     out("版本号大魔王骂骂咧咧地 GUN 了。", "gold");
     unlock("大魔王的屈服");
   } else {
@@ -2113,12 +2963,16 @@ $("btnResetAch").addEventListener("click", async () => {
   // 主题：先应用，避免闪一下默认色
   applyTheme(currentThemeId, currentAccent);
 
-  if (localStorage.getItem("mcFixer.log")) logInput.value = localStorage.getItem("mcFixer.log");
-  if (localStorage.getItem("mcFixer.output")) outputEl.innerHTML = localStorage.getItem("mcFixer.output");
+  if (!storageOff) {
+    try {
+      if (localStorage.getItem("mcFixer.log")) logInput.value = localStorage.getItem("mcFixer.log");
+      if (localStorage.getItem("mcFixer.output")) outputEl.innerHTML = localStorage.getItem("mcFixer.output");
+    } catch (e) {}
+  }
   lastLogLen = logInput.value.length;
 
   if (stats.vAngry) {
-    versionEl.innerHTML = 'v1.1 🐶';
+    versionEl.innerHTML = 'v1.2 🐶';
     versionEl.classList.add("devil");
   }
 
@@ -2135,21 +2989,27 @@ $("btnResetAch").addEventListener("click", async () => {
   if (h >= 6 && h < 8) unlock("早八人");
 
   if (!outputEl.innerHTML.trim()) {
-    out("MC 赛博急救与空投系统 v1.1 已启动。", "ok");
-    out("💡 第一步：把 crash-report / latest.log 粘贴到左上输入框，或点「📁 读取文件」。", "dim");
-    out("💡 第二步：点「⚡ 开始诊断」，右侧会给出锐评和处方（整篇日志都会识别，不截断）。", "dim");
+    out("MC 赛博急救与空投系统 v1.2 已启动。", "ok");
+    out("💡 第一步：把 crash-report / latest.log 粘贴到输入框，或点「📁 读取文件」。", "dim");
+    out("💡 第二步：点「⚡ 开始诊断」，终端会给出主因、次因和处方（整篇日志都会识别）。", "dim");
+    out("💡 v1.2 新增：可疑模组点名 + 病历卡，一键复制发群求助。", "dim");
     out("💡 支持 1.6.4 / Beta / Alpha ~ 26.1+ 各版本日志，新旧格式自动识别。", "dim");
-    out("💡 右上角新增「🎛️ 个性化」：可换主题色、开梗体诊断。", "dim");
     out("💡 新手建议先点右上角「❓ 使用指南」。", "dim");
   } else {
     out("【系统】已恢复上次的工作进度。", "dim");
   }
 
-  // 首次访问弹新手引导
-  if (!stats.onboarded) {
+  // v1.2：先看更新介绍，再决定要不要弹首次使用指南
+  let seenVersion = null;
+  try { seenVersion = localStorage.getItem(SEEN_VERSION_KEY); } catch (e) {}
+  if (seenVersion !== APP_VERSION) {
+    setTimeout(() => openUpdateIntro(true), 500);
+  } else if (!stats.onboarded) {
     setTimeout(() => openGuide(true), 500);
   }
 })();
+
+
 
 /* ============================================================
  *  16. 下载助手（独立 IIFE 作用域隔离）
